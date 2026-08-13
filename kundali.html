@@ -75,6 +75,68 @@
     option { background:#1c1436; color:var(--parchment); }
     input[type="date"]::-webkit-calendar-picker-indicator { filter:invert(0.7) sepia(1) hue-rotate(10deg); cursor:pointer; }
 
+    /* TIME OF BIRTH REDESIGN (48px Height & No Spinner Arrows) */
+    .ck-time-group { display:flex; gap:8px; align-items:center; width:100%; }
+    .ck-time-input {
+      height: 48px;
+      flex: 1;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--parchment);
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 8px;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      -webkit-appearance: none;
+      -moz-appearance: textfield;
+    }
+    .ck-time-input::-webkit-outer-spin-button,
+    .ck-time-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .ck-time-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.25);
+    }
+    .ck-time-input:invalid {
+      border-color: var(--rose);
+    }
+    .ck-time-input:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .ck-time-colon {
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 18px;
+      user-select: none;
+    }
+    .ck-time-ampm {
+      height: 48px;
+      flex: 1.2;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--parchment);
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 12px;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+    .ck-time-ampm:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.25);
+    }
+
     .generate-btn {
       width:100%; margin-top:26px;
       background:linear-gradient(135deg,rgba(201,162,75,0.28),rgba(201,162,75,0.08));
@@ -244,12 +306,12 @@
           </div>
         </div>
         <div class="form-group">
-          <label>Time of Birth (12-Hour)</label>
-          <div style="display:flex; gap:6px; align-items:center;">
-            <input type="number" id="f-tob-hr" min="1" max="12" placeholder="HH" value="10" style="flex:1; text-align:center;" required title="Hour (1-12)" />
-            <span style="color:var(--gold); font-weight:bold;">:</span>
-            <input type="number" id="f-tob-min" min="0" max="59" placeholder="MM" value="30" style="flex:1; text-align:center;" required title="Minute (0-59)" />
-            <select id="f-tob-ampm" style="flex:1.2;" title="AM/PM">
+          <label>Time of Birth</label>
+          <div class="ck-time-group">
+            <input type="number" id="f-tob-hr" class="ck-time-input" min="1" max="12" placeholder="11" value="11" required title="Hour (01–12)" autocomplete="off" />
+            <span class="ck-time-colon">:</span>
+            <input type="number" id="f-tob-min" class="ck-time-input" min="0" max="59" placeholder="30" value="30" required title="Minute (00–59)" autocomplete="off" />
+            <select id="f-tob-ampm" class="ck-time-ampm" title="AM/PM">
               <option value="AM" selected>AM</option>
               <option value="PM">PM</option>
             </select>
@@ -949,6 +1011,47 @@ document.getElementById('btn-back').addEventListener('click',function(){
     opt.textContent = y;
     if(y === 1998) opt.selected = true;
     ySelect.appendChild(opt);
+  }
+})();
+
+/* TIME INPUT TYPING & FOCUS UTILITIES */
+(function(){
+  var hrInp = document.getElementById('f-tob-hr');
+  var minInp = document.getElementById('f-tob-min');
+  var ampmSel = document.getElementById('f-tob-ampm');
+
+  if(hrInp && minInp){
+    hrInp.addEventListener('input', function(){
+      var v = parseInt(this.value, 10);
+      if(!isNaN(v) && (this.value.length >= 2 || v > 1)){
+        minInp.focus();
+        minInp.select();
+      }
+    });
+
+    minInp.addEventListener('input', function(){
+      if(this.value.length >= 2 && ampmSel){
+        ampmSel.focus();
+      }
+    });
+
+    hrInp.addEventListener('blur', function(){
+      var v = parseInt(this.value, 10);
+      if(!isNaN(v)){
+        if(v < 1) v = 1;
+        if(v > 12) v = 12;
+        this.value = v < 10 ? '0' + v : v;
+      }
+    });
+
+    minInp.addEventListener('blur', function(){
+      var v = parseInt(this.value, 10);
+      if(!isNaN(v)){
+        if(v < 0) v = 0;
+        if(v > 59) v = 59;
+        this.value = v < 10 ? '0' + v : v;
+      }
+    });
   }
 })();
 
