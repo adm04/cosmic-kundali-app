@@ -244,21 +244,11 @@
           </div>
         </div>
         <div class="form-group">
-          <label>Time of Birth</label>
+          <label>Time of Birth (12-Hour)</label>
           <div style="display:flex; gap:6px; align-items:center;">
-            <select id="f-tob-hr" style="flex:1;" title="Hour">
-              <option value="1">01</option><option value="2">02</option><option value="3">03</option>
-              <option value="4">04</option><option value="5">05</option><option value="6">06</option>
-              <option value="7">07</option><option value="8">08</option><option value="9">09</option>
-              <option value="10">10</option><option value="11" selected>11</option><option value="12">12</option>
-            </select>
+            <input type="number" id="f-tob-hr" min="1" max="12" placeholder="HH" value="10" style="flex:1; text-align:center;" required title="Hour (1-12)" />
             <span style="color:var(--gold); font-weight:bold;">:</span>
-            <select id="f-tob-min" style="flex:1;" title="Minute">
-              <option value="0">00</option><option value="5">05</option><option value="10">10</option>
-              <option value="15" selected>15</option><option value="20">20</option><option value="25">25</option>
-              <option value="30">30</option><option value="35">35</option><option value="40">40</option>
-              <option value="45">45</option><option value="50">50</option><option value="55">55</option>
-            </select>
+            <input type="number" id="f-tob-min" min="0" max="59" placeholder="MM" value="30" style="flex:1; text-align:center;" required title="Minute (0-59)" />
             <select id="f-tob-ampm" style="flex:1.2;" title="AM/PM">
               <option value="AM" selected>AM</option>
               <option value="PM">PM</option>
@@ -908,6 +898,8 @@ document.getElementById('kundali-form').addEventListener('submit',function(e){
 
   var rawHr=parseInt(document.getElementById('f-tob-hr').value,10);
   var rawMn=parseInt(document.getElementById('f-tob-min').value,10);
+  if(isNaN(rawHr) || rawHr < 1 || rawHr > 12) rawHr = 12;
+  if(isNaN(rawMn) || rawMn < 0 || rawMn > 59) rawMn = 0;
   var ampm=document.getElementById('f-tob-ampm').value;
 
   var hr = rawHr;
