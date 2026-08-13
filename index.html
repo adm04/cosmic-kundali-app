@@ -312,6 +312,140 @@
       box-shadow: 0 0 14px rgba(201, 162, 75, 0.25);
     }
 
+    /* HORIZON TIMELINE COMPONENT */
+    .ck-horizon-wrap {
+      margin: 24px 0 28px;
+      padding: 24px 20px;
+      background: linear-gradient(160deg, rgba(28, 20, 54, 0.8), rgba(10, 8, 24, 0.95));
+      border: 1px solid rgba(201, 162, 75, 0.35);
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(10, 8, 24, 0.6), inset 0 0 20px rgba(201, 162, 75, 0.05);
+    }
+    .ck-horizon-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(201, 162, 75, 0.2);
+    }
+    .ck-horizon-title {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      color: var(--gold-bright);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ck-horizon-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .ck-horizon-track {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      position: relative;
+      padding: 10px 0 6px;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+    }
+    .ck-horizon-track::before {
+      content: '';
+      position: absolute;
+      top: 25px;
+      left: 30px;
+      right: 30px;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(201, 162, 75, 0.2), var(--gold) 50%, rgba(201, 162, 75, 0.2));
+      z-index: 0;
+    }
+
+    .ck-horizon-node {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      flex: 1;
+      min-width: 120px;
+      padding: 0 6px;
+    }
+
+    .ck-node-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--deep-purple);
+      border: 2px solid var(--gold);
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .ck-horizon-node.is-here .ck-node-dot {
+      width: 18px;
+      height: 18px;
+      background: var(--gold-bright);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 0 rgba(242, 211, 138, 0.8);
+      animation: pulseGlow 1.8s infinite;
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(242, 211, 138, 0.8), 0 0 10px rgba(201, 162, 75, 0.8);
+        transform: scale(1);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(242, 211, 138, 0), 0 0 20px rgba(201, 162, 75, 0.4);
+        transform: scale(1.15);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(242, 211, 138, 0), 0 0 10px rgba(201, 162, 75, 0.8);
+        transform: scale(1);
+      }
+    }
+
+    .ck-node-badge {
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      color: var(--gold-bright);
+      background: rgba(201, 162, 75, 0.2);
+      border: 1px solid var(--gold);
+      border-radius: 999px;
+      padding: 2px 8px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .ck-node-date {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 3px;
+    }
+
+    .ck-node-label {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--parchment);
+      margin-bottom: 4px;
+    }
+
+    .ck-node-desc {
+      font-size: 10.5px;
+      color: var(--muted);
+      line-height: 1.35;
+      max-width: 140px;
+    }
+
     /* TABS */
     .ck-tabs { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin:26px 0 24px; }
     .ck-tab { font-family:'Cinzel',serif; font-size:11.5px; letter-spacing:0.06em; color:var(--muted); background:rgba(255,255,255,0.02); border:1px solid rgba(201,162,75,0.22); padding:10px 16px; border-radius:999px; cursor:pointer; transition:all 0.25s ease; display:flex; align-items:center; gap:7px; }
@@ -906,40 +1040,330 @@ var WEALTH_H11={
   'Pisces':'Creative, spiritual, and imaginative ventures carry the greatest potential',
 };
 
+var NAK_DEITIES = [
+  'Ashvins (Golden Healers)', 'Yama (God of Dharma & Restraint)', 'Agni (God of Sacred Fire)',
+  'Brahma (The Creator)', 'Soma (The Moon God of Nectar)', 'Rudra (The Storm Lord)',
+  'Aditi (Mother of Abundance)', 'Brihaspati (Teacher of Gods)', 'Nagas (Serpent Deities)',
+  'Pitris (Ancestral Spirits)', 'Bhaga (God of Fortune)', 'Aryaman (God of Patronage & Union)',
+  'Savitar (The Solar Craftsman)', 'Vishwakarma (Divine Architect)', 'Vayu (God of Wind & Impulse)',
+  'Indragni (Gods of Fire & Power)', 'Mitra (God of Divine Friendship)', 'Indra (King of Gods)',
+  'Nirriti (Goddess of Roots)', 'Apas (Cosmic Waters)', 'Vishvedevas (Universal Cosmic Laws)',
+  'Vishnu (Preserver of Cosmos)', 'Vasus (Eight Gods of Light)', 'Varuna (Lord of Cosmic Waters)',
+  'Aja Ekapada (The Cosmic Fire)', 'Ahirbudhnya (Serpent of Depths)', 'Pushan (Nurturer & Traveler Guide)'
+];
+
+var PADA_NOTE = {
+  1: 'Dharma (purpose, moral leadership, and pioneering initiative)',
+  2: 'Artha (practical structure, resourcefulness, and material stability)',
+  3: 'Kama (creative expression, communication, and social connection)',
+  4: 'Moksha (inner reflection, intuition, and spiritual alignment)'
+};
+
+function fmtDegMin(lon) {
+  var degFloat = lon % 30;
+  var deg = Math.floor(degFloat);
+  var min = Math.floor((degFloat - deg) * 60);
+  return deg + '°' + (min < 10 ? '0' + min : min) + "'";
+}
+
+function getPlanetDignity(p, lon) {
+  var sign = signOf(lon);
+  var exalt = { Su: 0, Mo: 1, Ma: 9, Me: 5, Ju: 3, Ve: 11, Sa: 6, Ra: 1, Ke: 7 };
+  var debil = { Su: 6, Mo: 7, Ma: 3, Me: 11, Ju: 9, Ve: 5, Sa: 0, Ra: 7, Ke: 1 };
+  var own = { Su: [4], Mo: [3], Ma: [0, 7], Me: [2, 5], Ju: [8, 11], Ve: [1, 6], Sa: [9, 10], Ra: [2], Ke: [8] };
+
+  if (exalt[p] === sign) return { status: 'exalted', label: 'Exalted in ' + ZODIAC[sign] };
+  if (debil[p] === sign) return { status: 'debilitated', label: 'Debilitated in ' + ZODIAC[sign] };
+  if (own[p] && own[p].indexOf(sign) >= 0) return { status: 'own', label: 'Own Sign (Swagriha) in ' + ZODIAC[sign] };
+  return { status: 'neutral', label: 'Neutral in ' + ZODIAC[sign] };
+}
+
+function detectChartSignature(d) {
+  var stelliums = [];
+  var debilitated = [];
+  var exalted = [];
+  var ownSigns = [];
+
+  for (var h = 1; h <= 12; h++) {
+    var hPs = PORDER.filter(function(p) { return d.pHouse[p] === h && p !== 'As'; });
+    if (hPs.length >= 3) {
+      stelliums.push({ house: h, planets: hPs.map(function(p){ return PNAME[p] || p; }) });
+    }
+  }
+
+  PORDER.forEach(function(p) {
+    if (p === 'As') return;
+    var lon = d.planetsLon[p];
+    if (lon === undefined) return;
+    var dig = getPlanetDignity(p, lon);
+    var house = d.pHouse[p];
+    if (dig.status === 'exalted') {
+      exalted.push({ planet: PNAME[p] || p, house: house, sign: ZODIAC[signOf(lon)] });
+    } else if (dig.status === 'debilitated') {
+      debilitated.push({ planet: PNAME[p] || p, house: house, sign: ZODIAC[signOf(lon)] });
+    } else if (dig.status === 'own') {
+      ownSigns.push({ planet: PNAME[p] || p, house: house, sign: ZODIAC[signOf(lon)] });
+    }
+  });
+
+  var summary = '';
+  if (exalted.length > 0 && stelliums.length > 0) {
+    summary = 'Your chart is defined by an exalted ' + exalted[0].planet + ' in House ' + exalted[0].house + ' working alongside a powerful ' + stelliums[0].planets.length + '-planet Stellium in House ' + stelliums[0].house + ' (' + stelliums[0].planets.join(', ') + '). This creates an unusually concentrated engine of ambition and personal mastery.';
+  } else if (exalted.length > 0) {
+    summary = 'The crowning hallmark of your chart is an exalted ' + exalted[0].planet + ' in House ' + exalted[0].house + ' (' + exalted[0].sign + '). This endows you with exceptional dignity, high standards, and a natural aura of authority in ' + HTHEME[exalted[0].house - 1] + '.';
+  } else if (stelliums.length > 0) {
+    summary = 'Your chart\'s primary signature is a heavy ' + stelliums[0].planets.length + '-planet Stellium in House ' + stelliums[0].house + ' (' + stelliums[0].planets.join(', ') + '). Almost your entire life force routes through ' + HTHEME[stelliums[0].house - 1] + ', making this your ultimate area of focus and growth.';
+  } else if (ownSigns.length > 0) {
+    summary = 'Your chart is grounded by ' + ownSigns[0].planet + ' in its own sign of ' + ownSigns[0].sign + ' (Swagriha) in House ' + ownSigns[0].house + '. This gives you an unshakeable foundation of inner strength and self-reliance in ' + HTHEME[ownSigns[0].house - 1] + '.';
+  } else if (debilitated.length > 0) {
+    summary = 'Your chart carries a significant growth key with ' + debilitated[0].planet + ' in debilitation in House ' + debilitated[0].house + ' (' + debilitated[0].sign + '). What feels like your deepest sensitivity or early vulnerability becomes your ultimate source of wisdom once mastered.';
+  } else {
+    summary = 'Your chart displays a balanced distribution of planetary forces across houses, indicating a versatile life path capable of adapting across multiple domains without extreme single-point friction.';
+  }
+
+  return {
+    stelliums: stelliums,
+    debilitated: debilitated,
+    exalted: exalted,
+    ownSigns: ownSigns,
+    summary: summary
+  };
+}
+
+function calcAntardashas(mahaPlanet, mahaStart, mahaEnd) {
+  var mIdx = DASHA_ORDER.indexOf(mahaPlanet);
+  var mYrs = DASHA_YRS[mahaPlanet];
+  var totalMs = (mahaEnd.getTime() - mahaStart.getTime());
+  var antars = [];
+  var currentStart = new Date(mahaStart.getTime());
+
+  for (var i = 0; i < 9; i++) {
+    var aPlanet = DASHA_ORDER[(mIdx + i) % 9];
+    var aYrs = (mYrs * DASHA_YRS[aPlanet]) / 120;
+    var fraction = aYrs / mYrs;
+    var durationMs = totalMs * fraction;
+    var aEnd = new Date(currentStart.getTime() + durationMs);
+
+    antars.push({
+      planet: aPlanet,
+      start: new Date(currentStart.getTime()),
+      end: new Date(aEnd.getTime()),
+      years: aYrs
+    });
+    currentStart = new Date(aEnd.getTime());
+  }
+  return antars;
+}
+
+function getAscTakeaways(sign, deg, nak, pada) {
+  var bullets = [];
+  if (deg < 10) {
+    bullets.push('Early degree (' + deg + '°) placement gives raw, pioneering energy in starting new chapters.');
+  } else if (deg < 20) {
+    bullets.push('Mid-degree (' + deg + '°) placement brings balanced, fully-expressed ' + sign + ' character.');
+  } else {
+    bullets.push('Late degree (' + deg + '°) placement gives mature, seasoned perspective and deep endurance.');
+  }
+  bullets.push('Pada ' + pada + ' of ' + nak + ' directs your energy toward ' + (PADA_NOTE[pada] || 'focused personal growth') + '.');
+  return bullets;
+}
+
+function getMoonTakeaways(sign, deg, nak, pada, dignity) {
+  var bullets = [];
+  if (dignity.status === 'exalted') {
+    bullets.push('Exalted Moon gives exceptional emotional resilience, poise, and steady inner peace under pressure.');
+  } else if (dignity.status === 'debilitated') {
+    bullets.push('Debilitated Moon creates deep sensitivity — emotional mastery comes through self-compassion.');
+  } else if (dignity.status === 'own') {
+    bullets.push('Moon in Swagriha brings strong intuitive intelligence and natural nurturing instincts.');
+  } else {
+    bullets.push('Moon in ' + sign + ' gives adaptable emotional processing tuned to ' + sign + ' qualities.');
+  }
+  bullets.push('Pada ' + pada + ' of ' + nak + ' anchors your instincts in ' + (PADA_NOTE[pada] || 'self-awareness') + '.');
+  return bullets;
+}
+
+function genHorizonTimeline(d) {
+  var dashas = d.dashas;
+  var cd = currentDasha(dashas);
+  if (!cd) return '';
+
+  var antars = calcAntardashas(cd.planet, cd.start, cd.end);
+  var now = new Date();
+  var cAntar = antars.find(function(a) { return a.start <= now && a.end > now; }) || antars[0];
+  var cAntarIdx = antars.indexOf(cAntar);
+  var nAntar = (cAntarIdx < antars.length - 1) ? antars[cAntarIdx + 1] : null;
+  var nd = nextDasha(dashas);
+  var dobDate = d.dobDate || new Date();
+  var saturnReturn = new Date(dobDate.getFullYear() + 29.5, dobDate.getMonth(), dobDate.getDate());
+
+  var nodes = [
+    {
+      badge: 'Dasha Start',
+      date: fmtDate(cd.start),
+      label: PNAME[cd.planet] + ' Mahadasha',
+      desc: 'Major 120y cycle phase began.',
+      isHere: false
+    },
+    {
+      badge: 'Sub-Period',
+      date: fmtDate(cAntar.start),
+      label: PNAME[cAntar.planet] + ' Antardasha',
+      desc: 'Active sub-cycle focus.',
+      isHere: false
+    },
+    {
+      badge: 'Current Phase',
+      date: 'Today (' + fmtDate(now) + ')',
+      label: 'YOU ARE HERE',
+      desc: 'Active: ' + PNAME[cd.planet] + ' / ' + PNAME[cAntar.planet] + '.',
+      isHere: true
+    },
+    {
+      badge: 'Upcoming Sub',
+      date: nAntar ? fmtDate(nAntar.start) : 'Future',
+      label: nAntar ? PNAME[nAntar.planet] + ' Antardasha' : 'Next Sub-Period',
+      desc: nAntar ? 'Next sub-cycle shift begins.' : 'Upcoming transition.',
+      isHere: false
+    },
+    {
+      badge: 'Major Milestone',
+      date: nd ? fmtDate(nd.start) : fmtDate(saturnReturn),
+      label: nd ? PNAME[nd.planet] + ' Mahadasha' : 'Saturn Return',
+      desc: nd ? 'Next major 120y Dasha shift.' : 'First Saturn return cycle.',
+      isHere: false
+    }
+  ];
+
+  var trackHtml = nodes.map(function(n) {
+    return '<div class="ck-horizon-node' + (n.isHere ? ' is-here' : '') + '">' +
+      '<div class="ck-node-dot"></div>' +
+      '<div class="ck-node-badge">' + n.badge + '</div>' +
+      '<div class="ck-node-date">' + n.date + '</div>' +
+      '<div class="ck-node-label">' + n.label + '</div>' +
+      '<div class="ck-node-desc">' + n.desc + '</div>' +
+      '</div>';
+  }).join('');
+
+  return '<div class="ck-horizon-wrap">' +
+    '<div class="ck-horizon-header">' +
+    '<div class="ck-horizon-title"><span>✦</span> Horizon Timeline &mdash; Cosmic Time Stream</div>' +
+    '<div class="ck-horizon-subtitle">Vimshottari Dasha &amp; Antardasha Progression</div>' +
+    '</div>' +
+    '<div class="ck-horizon-track">' + trackHtml + '</div>' +
+    '</div>';
+}
+
 /* TAB GENERATORS */
 function genOverview(d, mode){
   var isSimple = (mode === 'simplified');
-  var h3ps=PORDER.filter(function(p){return d.pHouse[p]===3&&p!=='As';});
-  var lagnaNakIdx=nakOf(d.planetsLon['As']||0);
-  var lagnaNak=NAKSHATRA[lagnaNakIdx]||'';
-  var moonNak=d.moonNak;
-  var lagnaSign=d.lagnaSign;
-  var moonSign=d.moonSign;
-  var lagnaRuler=d.lagnaRuler;
 
-  if(isSimple){
-    return '<div class="ck-hero-line">"Your chart combines your '+lagnaSign+' rising personality with your '+moonSign+' emotional core."</div>'+
-      '<div class="ck-card"><div class="ck-eyebrow">Outer Self &mdash; Personality &amp; Focus</div><h3 class="ck-card-title">Driven by '+lagnaSign+' Energy</h3><div class="ck-card-body">'+
-      '<p><strong>What it means:</strong> Your primary approach to life is shaped by <strong>'+lagnaSign+'</strong> &mdash; '+(SIGN_DESC[lagnaSign]||'a unique and multi-layered soul')+'. You naturally lead with this energy when meeting new people or starting projects.</p>'+
-      '<p><strong>Why it matters:</strong> People experience your outer presence through this lens before getting to know your inner depth.</p>'+
-      '<div class="ck-remedy" style="margin-top:16px;"><div class="ck-remedy-title">Key Takeaways</div><ul><li>Embrace your natural '+lagnaSign+' strengths: directness, focus, and authenticity.</li><li>Your celestial star rhythm ('+lagnaNak+') gives you '+(NAK_DESC[lagnaNak]||'a distinct personal rhythm')+'.</li></ul></div>'+
-      '</div></div>'+
-      '<div class="ck-card ck-card-rose"><div class="ck-eyebrow">Inner Self &mdash; Feelings &amp; Instincts</div><h3 class="ck-card-title">Emotionally Guided by '+moonSign+'</h3><div class="ck-card-body">'+
-      '<p><strong>What it means:</strong> Deep down, your emotional instincts, mood, and core reactions respond to <strong>'+moonSign+'</strong>.</p>'+
-      '<p><strong>Why it matters:</strong> Understanding your inner Moon sign helps you process stress and build lasting inner peace.</p>'+
-      '<div class="ck-remedy" style="margin-top:16px;"><div class="ck-remedy-title">Key Takeaways</div><ul><li>Give yourself time to digest big decisions emotionally before acting.</li><li>Your inner feeling star ('+moonNak+') reflects '+(NAK_DESC[moonNak]||'your deep inner wisdom')+'.</li></ul></div>'+
-      '</div></div>';
+  var ascLon = d.planetsLon['As'] || 0;
+  var moonLon = d.planetsLon['Mo'] || 0;
+  var sunLon = d.planetsLon['Su'] || 0;
+
+  var ascSign = d.lagnaSign;
+  var ascDegStr = fmtDegMin(ascLon);
+  var ascNakIdx = nakOf(ascLon);
+  var ascNak = NAKSHATRA[ascNakIdx];
+  var ascNakLord = PNAME[NAK_LORDS[ascNakIdx]] || NAK_LORDS[ascNakIdx];
+  var ascNakDeity = NAK_DEITIES[ascNakIdx] || 'Celestial Guardian';
+  var ascPada = Math.floor((ascLon % (360/27)) / 3.3333333) + 1;
+
+  var moonSign = d.moonSign;
+  var moonDegStr = fmtDegMin(moonLon);
+  var moonNakIdx = nakOf(moonLon);
+  var moonNak = NAKSHATRA[moonNakIdx];
+  var moonNakLord = PNAME[NAK_LORDS[moonNakIdx]] || NAK_LORDS[moonNakIdx];
+  var moonNakDeity = NAK_DEITIES[moonNakIdx] || 'Celestial Nurturer';
+  var moonPada = Math.floor((moonLon % (360/27)) / 3.3333333) + 1;
+  var moonDignity = getPlanetDignity('Mo', moonLon);
+
+  var ascBullets = getAscTakeaways(ascSign, Math.floor(ascLon % 30), ascNak, ascPada);
+  var moonBullets = getMoonTakeaways(moonSign, Math.floor(moonLon % 30), moonNak, moonPada, moonDignity);
+
+  var signature = detectChartSignature(d);
+  var horizonHtml = genHorizonTimeline(d);
+
+  if (isSimple) {
+    return '<div class="ck-hero-line">"Your chart combines your ' + ascSign + ' rising outer personality with your ' + moonSign + ' emotional core."</div>' +
+      '<div class="ck-card"><div class="ck-eyebrow">Outer Self &mdash; Ascendant (Lagna)</div><h3 class="ck-card-title">' + ascSign + ' ' + ascDegStr + ' &middot; ' + ascNak + ' (Pada ' + ascPada + ')</h3><div class="ck-card-body">' +
+      '<p><strong>What it means:</strong> Your core outward behavior is guided by <strong>' + ascSign + '</strong> energy (' + (SIGN_DESC[ascSign] || 'a unique presence') + '). You naturally approach new opportunities and people with this focus.</p>' +
+      '<p><strong>Why it matters:</strong> This shapes how others perceive your initial presence, confidence, and personal boundaries.</p>' +
+      '<div class="ck-remedy" style="margin-top:16px;"><div class="ck-remedy-title">Key Takeaways</div><ul>' +
+      '<li>' + ascBullets[0] + '</li>' +
+      '<li>' + ascBullets[1] + '</li>' +
+      '</ul></div>' +
+      '</div></div>' +
+
+      '<div class="ck-card ck-card-rose"><div class="ck-eyebrow">Inner Self &mdash; Moon (Chandra)</div><h3 class="ck-card-title">Moon in ' + moonSign + ' ' + moonDegStr + ' &middot; ' + moonNak + ' (Pada ' + moonPada + ')</h3><div class="ck-card-body">' +
+      '<p><strong>What it means:</strong> Deep down, your emotional instincts, inner processing, and sub-conscious needs are guided by <strong>' + moonSign + '</strong>.</p>' +
+      '<p><strong>Dignity Status:</strong> <span class="ck-badge" style="display:inline-block; padding:3px 10px; font-size:11px;">' + moonDignity.label + '</span></p>' +
+      '<div class="ck-remedy" style="margin-top:16px;"><div class="ck-remedy-title">Key Takeaways</div><ul>' +
+      '<li>' + moonBullets[0] + '</li>' +
+      '<li>' + moonBullets[1] + '</li>' +
+      '</ul></div>' +
+      '</div></div>' +
+
+      '<div class="ck-card ck-card-sage"><div class="ck-eyebrow">Chart Signature &mdash; Distinctive Alignment</div><h3 class="ck-card-title">What Makes Your Chart Unique</h3><div class="ck-card-body">' +
+      '<p>' + signature.summary + '</p>' +
+      '</div></div>' +
+
+      horizonHtml;
   }
 
-  var stelliumHtml='';
-  if(h3ps.length>=3){
-    stelliumHtml='<div class="ck-card ck-card-sage"><div class="ck-eyebrow">The Signature &mdash; House 3</div><h3 class="ck-card-title">A Concentration of Life-Force in House 3</h3><div class="ck-card-body"><p><strong>'+h3ps.map(function(p){return PNAME[p]||p;}).join(', ')+'</strong> are clustered in your 3rd house — the house of <em>'+HTHEME[2]+'</em>. This is a powerful stellium: almost everything routes through your voice, your hands, and your nerve.</p><p>This concentration makes you formidable in any field requiring communication, courage, or skilled effort. The challenge lies in dispersal — so much energy in one zone can neglect others.</p></div></div>';
+  // DETAILED MODE
+  var sigList = [];
+  if (signature.stelliums.length > 0) {
+    signature.stelliums.forEach(function(s) {
+      sigList.push('<strong>Stellium in House ' + s.house + ':</strong> ' + s.planets.join(', '));
+    });
+  }
+  if (signature.exalted.length > 0) {
+    signature.exalted.forEach(function(e) {
+      sigList.push('<strong>Exalted Planet:</strong> ' + e.planet + ' in ' + e.sign + ' (House ' + e.house + ')');
+    });
+  }
+  if (signature.ownSigns.length > 0) {
+    signature.ownSigns.forEach(function(o) {
+      sigList.push('<strong>Swagriha (Own Sign):</strong> ' + o.planet + ' in ' + o.sign + ' (House ' + o.house + ')');
+    });
+  }
+  if (signature.debilitated.length > 0) {
+    signature.debilitated.forEach(function(d) {
+      sigList.push('<strong>Debilitated Planet:</strong> ' + d.planet + ' in ' + d.sign + ' (House ' + d.house + ')');
+    });
   }
 
-  return '<div class="ck-hero-line">"'+lagnaSign+' rising, '+moonSign+' Moon — a chart written in intensity and purpose."</div>'+
-    '<div class="ck-card"><div class="ck-eyebrow">The Foundation &mdash; Lagna</div><h3 class="ck-card-title">'+lagnaSign+' Ascendant &middot; '+lagnaNak+' Nakshatra</h3><div class="ck-card-body"><p>Your rising sign is <strong>'+lagnaSign+'</strong>, ruled by <strong>'+lagnaRuler+'</strong>. This shapes how the world experiences you before you say a word — '+(SIGN_DESC[lagnaSign]||'a complex and layered soul')+'.</p><p>The Ascendant in '+lagnaNak+' nakshatra gives you a particular quality of presence — '+(NAK_DESC[lagnaNak]||'a unique celestial signature')+'. This is the lens through which you meet every new beginning.</p></div></div>'+
-    '<div class="ck-card ck-card-rose"><div class="ck-eyebrow">The Foundation &mdash; Moon</div><h3 class="ck-card-title">Moon in '+moonSign+' &middot; '+moonNak+' Nakshatra</h3><div class="ck-card-body"><p>Your Moon sits in <strong>'+moonSign+'</strong> — '+(moonSign===lagnaSign?'sharing the same sign as your Ascendant, creating a unified emotional and physical identity':'a placement that colours your instincts, memory, and emotional responses with the qualities of '+moonSign)+'.</p><p>In <strong>'+moonNak+'</strong> nakshatra, your inner world carries '+(NAK_DESC[moonNak]||'a unique celestial quality')+'. This is the lens through which you process all experience before it becomes thought.</p></div></div>'+
-    stelliumHtml;
+  var sigItemsHtml = sigList.length ? '<ul style="margin-top:10px; line-height:1.7;"><li>' + sigList.join('</li><li>') + '</li></ul>' : '<p style="margin-top:8px;">Balanced planetary distribution across houses.</p>';
+
+  return '<div class="ck-hero-line">"' + ascSign + ' ' + ascDegStr + ' rising, ' + moonSign + ' Moon — chart written in precision and purpose."</div>' +
+    '<div class="ck-card"><div class="ck-eyebrow">Outer Self &mdash; Lagna (' + ascSign + ' ' + ascDegStr + ')</div><h3 class="ck-card-title">' + ascSign + ' Ascendant &middot; ' + ascNak + ' Nakshatra (Pada ' + ascPada + ')</h3><div class="ck-card-body">' +
+    '<p>Your rising sign is <strong>' + ascSign + ' (' + ascDegStr + ')</strong>, ruled by <strong>' + d.lagnaRuler + '</strong>. Nakshatra: <strong>' + ascNak + '</strong> (Ruled by ' + ascNakLord + ' &middot; Deity: <em>' + ascNakDeity + '</em>).</p>' +
+    '<p><strong>Behavioral Tendency:</strong> ' + (SIGN_DESC[ascSign] || 'A complex celestial presence') + '. ' + (NAK_DESC[ascNak] || '') + '.</p>' +
+    '<p><strong>Social Perception:</strong> People meet you through the lens of ' + ascSign + ' before seeing your deeper waters.</p>' +
+    '<div class="ck-remedy" style="margin-top:16px;"><div class="ck-remedy-title">Nakshatra &amp; Pada Takeaways</div><ul>' +
+    '<li>' + ascBullets[0] + '</li>' +
+    '<li>' + ascBullets[1] + '</li>' +
+    '</ul></div>' +
+    '</div></div>' +
+
+    '<div class="ck-card ck-card-rose"><div class="ck-eyebrow">Inner Self &mdash; Chandra (' + moonSign + ' ' + moonDegStr + ')</div><h3 class="ck-card-title">Moon in ' + moonSign + ' &middot; ' + moonNak + ' Nakshatra (Pada ' + moonPada + ')</h3><div class="ck-card-body">' +
+    '<p>Your Moon sits at <strong>' + moonDegStr + ' ' + moonSign + '</strong> in <strong>' + moonNak + '</strong> nakshatra (Ruled by ' + moonNakLord + ' &middot; Deity: <em>' + moonNakDeity + '</em>).</p>' +
+    '<p><strong>Dignity Flag:</strong> <span class="ck-badge" style="display:inline-block; padding:3px 12px; font-size:11.5px; color:var(--gold-bright);">' + moonDignity.label + '</span></p>' +
+    '<p><strong>Emotional Processing:</strong> ' + (moonSign === ascSign ? 'Moon shares your Ascendant sign, creating a unified physical and emotional identity.' : 'Colours your instincts, memory, and emotional responses with the qualities of ' + moonSign + '.') + '</p>' +
+    '<div class="ck-remedy" style="margin-top:16px;"><div class="ck-remedy-title">Nakshatra &amp; Dignity Takeaways</div><ul>' +
+    '<li>' + moonBullets[0] + '</li>' +
+    '<li>' + moonBullets[1] + '</li>' +
+    '</ul></div>' +
+    '</div></div>' +
+
+    '<div class="ck-card ck-card-sage"><div class="ck-eyebrow">Chart Signature &mdash; Primary Lever</div><h3 class="ck-card-title">Unique Planetary Configurations</h3><div class="ck-card-body">' +
+    '<p>' + signature.summary + '</p>' +
+    sigItemsHtml +
+    '</div></div>' +
+
+    horizonHtml;
 }
 
 function genCareer(d, mode){
@@ -1156,7 +1580,14 @@ function generate(form){
   var dashas=calcDasha(planetsLon['Mo'],dobDate);
   var cd=currentDasha(dashas); var nd=nextDasha(dashas);
 
-  var data={name:name,gender:gender,dob:dob,tob:tob,place:place,lat:lat,lng:lng,jd:jd,planetsLon:planetsLon,lagnaSign:lagnaSign,moonSign:moonSign,sunSign:sunSign,lagnaRuler:lagnaRuler,moonNak:moonNak,lagnaNak:lagnaNak,hSigns:hSigns,pHouse:pHouse,dashas:dashas};
+  var cAntar = null;
+  if(cd){
+    var antars = calcAntardashas(cd.planet, cd.start, cd.end);
+    var now = new Date();
+    cAntar = antars.find(function(a){ return a.start <= now && a.end > now; });
+  }
+
+  var data={name:name,gender:gender,dob:dob,tob:tob,place:place,lat:lat,lng:lng,jd:jd,planetsLon:planetsLon,lagnaSign:lagnaSign,moonSign:moonSign,sunSign:sunSign,lagnaRuler:lagnaRuler,moonNak:moonNak,lagnaNak:lagnaNak,hSigns:hSigns,pHouse:pHouse,dashas:dashas,dobDate:dobDate};
 
   /* Render chart */
   renderChart(hSigns,pHouse,planetsLon);
@@ -1176,6 +1607,7 @@ function generate(form){
   /* Facts */
   var fHtml=[];
   if(cd) fHtml.push('<span>Mahadasha: <b>'+PNAME[cd.planet]+'</b></span>');
+  if(cAntar) fHtml.push('<span>Antardasha: <b>'+PNAME[cAntar.planet]+'</b> (until '+fmtDate(cAntar.end)+')</span>');
   if(nd) fHtml.push('<span>Next Dasha: <b>'+PNAME[nd.planet]+'</b> from '+fmtDate(nd.start)+'</span>');
   fHtml.push('<span>Age: <b>'+calcAge(dobDate)+'</b></span>');
   document.getElementById('r-facts').innerHTML=fHtml.join('');
