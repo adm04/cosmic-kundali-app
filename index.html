@@ -268,6 +268,50 @@
     .ck-signbadges { display:flex; justify-content:center; gap:14px; margin-top:16px; flex-wrap:wrap; }
     .ck-badge { border:1px solid rgba(201,162,75,0.4); border-radius:10px; padding:6px 14px; font-family:'Cinzel',serif; font-size:11px; letter-spacing:0.08em; color:var(--gold); background:rgba(201,162,75,0.06); }
 
+    /* MODE TOGGLE */
+    .ck-mode-toggle-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 18px 0 10px;
+    }
+    .ck-mode-label {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+    .ck-mode-toggle {
+      display: inline-flex;
+      background: rgba(28, 20, 54, 0.75);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 3px;
+      box-shadow: 0 0 15px rgba(10, 8, 24, 0.5);
+    }
+    .ck-mode-btn {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      padding: 7px 18px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+    .ck-mode-btn.active {
+      background: linear-gradient(135deg, rgba(201,162,75,0.35), rgba(201,162,75,0.12));
+      color: var(--gold-bright);
+      font-weight: 600;
+      box-shadow: 0 0 14px rgba(201, 162, 75, 0.25);
+    }
+
     /* TABS */
     .ck-tabs { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin:26px 0 24px; }
     .ck-tab { font-family:'Cinzel',serif; font-size:11.5px; letter-spacing:0.06em; color:var(--muted); background:rgba(255,255,255,0.02); border:1px solid rgba(201,162,75,0.22); padding:10px 16px; border-radius:999px; cursor:pointer; transition:all 0.25s ease; display:flex; align-items:center; gap:7px; }
@@ -449,6 +493,13 @@
     <div class="ck-signbadges" id="r-badges"></div>
     <div class="ck-facts" id="r-facts"></div>
   </header>
+  <div class="ck-mode-toggle-wrap">
+    <span class="ck-mode-label">Reading Style:</span>
+    <div class="ck-mode-toggle" id="mode-toggle">
+      <button class="ck-mode-btn active" data-mode="simplified">Simplified</button>
+      <button class="ck-mode-btn" data-mode="detailed">Detailed</button>
+    </div>
+  </div>
   <nav class="ck-tabs" id="tab-nav">
     <button class="ck-tab active" data-tab="overview"><span class="ck-tab-glyph">&#9789;</span> Overview</button>
     <button class="ck-tab" data-tab="career"><span class="ck-tab-glyph">&#9796;</span> Career &amp; Karma</button>
@@ -856,7 +907,8 @@ var WEALTH_H11={
 };
 
 /* TAB GENERATORS */
-function genOverview(d){
+function genOverview(d, mode){
+  var isSimple = (mode === 'simplified');
   var h3ps=PORDER.filter(function(p){return d.pHouse[p]===3&&p!=='As';});
   var lagnaNakIdx=nakOf(d.planetsLon['As']||0);
   var lagnaNak=NAKSHATRA[lagnaNakIdx]||'';
@@ -865,21 +917,51 @@ function genOverview(d){
   var moonSign=d.moonSign;
   var lagnaRuler=d.lagnaRuler;
 
+  if(isSimple){
+    return '<div class="ck-hero-line">"Your chart combines your '+lagnaSign+' rising personality with your '+moonSign+' emotional core."</div>'+
+      '<div class="ck-card"><div class="ck-eyebrow">Outer Self &mdash; Personality &amp; Focus</div><h3 class="ck-card-title">Driven by '+lagnaSign+' Energy</h3><div class="ck-card-body">'+
+      '<p><strong>What it means:</strong> Your primary approach to life is shaped by <strong>'+lagnaSign+'</strong> &mdash; '+(SIGN_DESC[lagnaSign]||'a unique and multi-layered soul')+'. You naturally lead with this energy when meeting new people or starting projects.</p>'+
+      '<p><strong>Why it matters:</strong> People experience your outer presence through this lens before getting to know your inner depth.</p>'+
+      '<div class="ck-remedy" style="margin-top:16px;"><div class="ck-remedy-title">Key Takeaways</div><ul><li>Embrace your natural '+lagnaSign+' strengths: directness, focus, and authenticity.</li><li>Your celestial star rhythm ('+lagnaNak+') gives you '+(NAK_DESC[lagnaNak]||'a distinct personal rhythm')+'.</li></ul></div>'+
+      '</div></div>'+
+      '<div class="ck-card ck-card-rose"><div class="ck-eyebrow">Inner Self &mdash; Feelings &amp; Instincts</div><h3 class="ck-card-title">Emotionally Guided by '+moonSign+'</h3><div class="ck-card-body">'+
+      '<p><strong>What it means:</strong> Deep down, your emotional instincts, mood, and core reactions respond to <strong>'+moonSign+'</strong>.</p>'+
+      '<p><strong>Why it matters:</strong> Understanding your inner Moon sign helps you process stress and build lasting inner peace.</p>'+
+      '<div class="ck-remedy" style="margin-top:16px;"><div class="ck-remedy-title">Key Takeaways</div><ul><li>Give yourself time to digest big decisions emotionally before acting.</li><li>Your inner feeling star ('+moonNak+') reflects '+(NAK_DESC[moonNak]||'your deep inner wisdom')+'.</li></ul></div>'+
+      '</div></div>';
+  }
+
   var stelliumHtml='';
   if(h3ps.length>=3){
-    stelliumHtml='<div class="ck-card ck-card-sage"><div class="ck-eyebrow">The Signature — House 3</div><h3 class="ck-card-title">A Concentration of Life-Force in House 3</h3><div class="ck-card-body"><p><strong>'+h3ps.map(function(p){return PNAME[p]||p;}).join(', ')+'</strong> are clustered in your 3rd house — the house of <em>'+HTHEME[2]+'</em>. This is a powerful stellium: almost everything routes through your voice, your hands, and your nerve.</p><p>This concentration makes you formidable in any field requiring communication, courage, or skilled effort. The challenge lies in dispersal — so much energy in one zone can neglect others.</p></div></div>';
+    stelliumHtml='<div class="ck-card ck-card-sage"><div class="ck-eyebrow">The Signature &mdash; House 3</div><h3 class="ck-card-title">A Concentration of Life-Force in House 3</h3><div class="ck-card-body"><p><strong>'+h3ps.map(function(p){return PNAME[p]||p;}).join(', ')+'</strong> are clustered in your 3rd house — the house of <em>'+HTHEME[2]+'</em>. This is a powerful stellium: almost everything routes through your voice, your hands, and your nerve.</p><p>This concentration makes you formidable in any field requiring communication, courage, or skilled effort. The challenge lies in dispersal — so much energy in one zone can neglect others.</p></div></div>';
   }
 
   return '<div class="ck-hero-line">"'+lagnaSign+' rising, '+moonSign+' Moon — a chart written in intensity and purpose."</div>'+
-    '<div class="ck-card"><div class="ck-eyebrow">The Foundation — Lagna</div><h3 class="ck-card-title">'+lagnaSign+' Ascendant &middot; '+lagnaNak+' Nakshatra</h3><div class="ck-card-body"><p>Your rising sign is <strong>'+lagnaSign+'</strong>, ruled by <strong>'+lagnaRuler+'</strong>. This shapes how the world experiences you before you say a word — '+(SIGN_DESC[lagnaSign]||'a complex and layered soul')+'.</p><p>The Ascendant in '+lagnaNak+' nakshatra gives you a particular quality of presence — '+(NAK_DESC[lagnaNak]||'a unique celestial signature')+'. This is the lens through which you meet every new beginning.</p></div></div>'+
-    '<div class="ck-card ck-card-rose"><div class="ck-eyebrow">The Foundation — Moon</div><h3 class="ck-card-title">Moon in '+moonSign+' &middot; '+moonNak+' Nakshatra</h3><div class="ck-card-body"><p>Your Moon sits in <strong>'+moonSign+'</strong> — '+(moonSign===lagnaSign?'sharing the same sign as your Ascendant, creating a unified emotional and physical identity':'a placement that colours your instincts, memory, and emotional responses with the qualities of '+moonSign)+'.</p><p>In <strong>'+moonNak+'</strong> nakshatra, your inner world carries '+(NAK_DESC[moonNak]||'a unique celestial quality')+'. This is the lens through which you process all experience before it becomes thought.</p></div></div>'+
+    '<div class="ck-card"><div class="ck-eyebrow">The Foundation &mdash; Lagna</div><h3 class="ck-card-title">'+lagnaSign+' Ascendant &middot; '+lagnaNak+' Nakshatra</h3><div class="ck-card-body"><p>Your rising sign is <strong>'+lagnaSign+'</strong>, ruled by <strong>'+lagnaRuler+'</strong>. This shapes how the world experiences you before you say a word — '+(SIGN_DESC[lagnaSign]||'a complex and layered soul')+'.</p><p>The Ascendant in '+lagnaNak+' nakshatra gives you a particular quality of presence — '+(NAK_DESC[lagnaNak]||'a unique celestial signature')+'. This is the lens through which you meet every new beginning.</p></div></div>'+
+    '<div class="ck-card ck-card-rose"><div class="ck-eyebrow">The Foundation &mdash; Moon</div><h3 class="ck-card-title">Moon in '+moonSign+' &middot; '+moonNak+' Nakshatra</h3><div class="ck-card-body"><p>Your Moon sits in <strong>'+moonSign+'</strong> — '+(moonSign===lagnaSign?'sharing the same sign as your Ascendant, creating a unified emotional and physical identity':'a placement that colours your instincts, memory, and emotional responses with the qualities of '+moonSign)+'.</p><p>In <strong>'+moonNak+'</strong> nakshatra, your inner world carries '+(NAK_DESC[moonNak]||'a unique celestial quality')+'. This is the lens through which you process all experience before it becomes thought.</p></div></div>'+
     stelliumHtml;
 }
 
-function genCareer(d){
+function genCareer(d, mode){
+  var isSimple = (mode === 'simplified');
   var h10=d.hSigns[10]; var h10Lord=RULERS[ZODIAC.indexOf(h10)];
   var h10LordH=d.pHouse[abbr(h10Lord)]||1;
   var cd=currentDasha(d.dashas); var nd=nextDasha(d.dashas);
+
+  if(isSimple){
+    return '<div class="ck-hero-line">"Your career thrives when you build steady expertise and prove your value over time."</div>'+
+      '<div class="ck-stat-row"><div class="ck-stat"><div class="ck-stat-label">Career Focus</div><div class="ck-stat-value">'+h10+'</div></div><div class="ck-stat"><div class="ck-stat-label">Primary Driver</div><div class="ck-stat-value">'+h10Lord+'</div></div><div class="ck-stat"><div class="ck-stat-label">Main Domain</div><div class="ck-stat-value">'+HTHEME[h10LordH-1]+'</div></div></div>'+
+      '<div class="ck-card"><div class="ck-eyebrow">Career Path</div><h3 class="ck-card-title">Work &amp; Professional Growth</h3><div class="ck-card-body">'+
+      '<p><strong>What it means:</strong> Your ideal work aligns with <strong>'+h10+'</strong> energy: '+(CAREER_Q[h10]||'building expertise and long-term reputation')+'. Your professional drive is centered in your '+ord(h10LordH)+' house ('+HTHEME[h10LordH-1]+').</p>'+
+      '<p><strong>Why it matters:</strong> Consistent effort and compounding authority work far better for you than seeking overnight shortcuts.</p>'+
+      '<div class="ck-remedy" style="margin-top:16px;"><div class="ck-remedy-title">Key Takeaways</div><ul><li>Focus on mastering 1 or 2 core skills—depth beats scattered effort.</li><li>Keep a weekly record of achievements to overcome inner self-doubt.</li></ul></div>'+
+      '</div></div>'+
+      '<div class="ck-card ck-card-sage"><div class="ck-eyebrow">Timing &amp; Next Steps</div><h3 class="ck-card-title">Current Professional Phase</h3><div class="ck-card-body">'+
+      '<p><strong>What it means:</strong> '+(cd ? 'You are currently in your <strong>'+PNAME[cd.planet]+' phase</strong> (until '+fmtDate(cd.end)+'). '+(DASHA_CAREER[cd.planet]||'Focus on your core goals.') : 'Your career phase rewards steady focus.')+'</p>'+
+      '<p><strong>Why it matters:</strong> Aligning your daily focus with this period yields maximum results with minimum friction.</p>'+
+      '</div></div>';
+  }
+
   return '<div class="ck-hero-line">"'+d.lagnaSign+' rising calls for craft over spectacle — reputation built year by patient year."</div>'+
     '<div class="ck-stat-row"><div class="ck-stat"><div class="ck-stat-label">10th House</div><div class="ck-stat-value">'+h10+'</div></div><div class="ck-stat"><div class="ck-stat-label">10th Lord</div><div class="ck-stat-value">'+h10Lord+'</div></div><div class="ck-stat"><div class="ck-stat-label">'+h10Lord+' in</div><div class="ck-stat-value">House '+h10LordH+'</div></div></div>'+
     '<div class="ck-card"><div class="ck-eyebrow">10th House &amp; '+h10Lord+'</div><h3 class="ck-card-title">Career Shaped by '+h10+' Energy</h3><div class="ck-card-body"><p>Your Midheaven is in <strong>'+h10+'</strong>, governed by <strong>'+h10Lord+'</strong>, which sits in your '+ord(h10LordH)+' house — the house of <em>'+HTHEME[h10LordH-1]+'</em>. Your path points toward '+(CAREER_Q[h10]||'fields rewarding sustained expertise')+'.</p><p>Career identity compounds through demonstrated competence rather than a single dramatic break — the slow-burn professional archetype is written here.</p></div></div>'+
@@ -892,10 +974,26 @@ function genCareer(d){
     '<div class="ck-remedy"><div class="ck-remedy-title">Career Upayas</div><ul><li>Honour your 10th lord <strong>'+h10Lord+'</strong>: '+(PLANET_UPAYA[abbr(h10Lord)]||'observe the planet\'s day with an aligned act')+'.</li><li>Build one immovable weekly review ritual — consistency compounds.</li><li>Before high-stakes pitches, ground your nervous system first — your blocker is usually nerve, not knowledge.</li></ul></div>';
 }
 
-function genLove(d){
+function genLove(d, mode){
+  var isSimple = (mode === 'simplified');
   var h7=d.hSigns[7]; var h7Lord=RULERS[ZODIAC.indexOf(h7)];
   var h7LordH=d.pHouse[abbr(h7Lord)]||1;
   var venH=d.pHouse['Ve']||1;
+
+  if(isSimple){
+    return '<div class="ck-hero-line">"Relationships are deeply meaningful for you &mdash; you seek authentic connection and mutual trust."</div>'+
+      '<div class="ck-stat-row"><div class="ck-stat"><div class="ck-stat-label">Partnership Sign</div><div class="ck-stat-value">'+h7+'</div></div><div class="ck-stat"><div class="ck-stat-label">Relationship Lord</div><div class="ck-stat-value">'+h7Lord+'</div></div><div class="ck-stat"><div class="ck-stat-label">Venus House</div><div class="ck-stat-value">House '+venH+'</div></div></div>'+
+      '<div class="ck-card"><div class="ck-eyebrow">Love &amp; Companionship</div><h3 class="ck-card-title">What You Seek in a Partner</h3><div class="ck-card-body">'+
+      '<p><strong>What it means:</strong> You are drawn to partners who embody <strong>'+h7+'</strong> qualities: '+(LOVE_Q[h7]||'authenticity, warmth, and mutual respect')+'. Relationship dynamics connect directly to your '+ord(h7LordH)+' house ('+HTHEME[h7LordH-1]+').</p>'+
+      '<p><strong>Why it matters:</strong> Choosing partners who share your core values prevents unnecessary emotional friction.</p>'+
+      '<div class="ck-remedy" style="margin-top:16px;"><div class="ck-remedy-title">Key Takeaways</div><ul><li>Communicate your emotional boundaries early instead of keeping them hidden.</li><li>Your Moon\'s empathy allows you to tune into your partner\'s unspoken feelings.</li></ul></div>'+
+      '</div></div>'+
+      '<div class="ck-card ck-card-rose"><div class="ck-eyebrow">Harmony &amp; Expression</div><h3 class="ck-card-title">Venus in House '+venH+'</h3><div class="ck-card-body">'+
+      '<p><strong>What it means:</strong> '+(VENUS_NOTE[venH]||'Venus adds warmth and a desire for balance to your personal life.')+'</p>'+
+      '<p><strong>Why it matters:</strong> Expressing affection in small, everyday ways keeps your bond strong.</p>'+
+      '</div></div>';
+  }
+
   return '<div class="ck-hero-line">"Partnership for '+d.lagnaSign+' rising is never casual — it is a full-soul undertaking."</div>'+
     '<div class="ck-stat-row"><div class="ck-stat"><div class="ck-stat-label">7th House</div><div class="ck-stat-value">'+h7+'</div></div><div class="ck-stat"><div class="ck-stat-label">7th Lord</div><div class="ck-stat-value">'+h7Lord+'</div></div><div class="ck-stat"><div class="ck-stat-label">Venus in</div><div class="ck-stat-value">House '+venH+'</div></div></div>'+
     '<div class="ck-card"><div class="ck-eyebrow">7th House &amp; '+h7Lord+'</div><h3 class="ck-card-title">Partnership Through '+h7+' Energy</h3><div class="ck-card-body"><p>Your 7th house of marriage is <strong>'+h7+'</strong>, ruled by <strong>'+h7Lord+'</strong>. Your ideal partner carries '+h7+' qualities: '+(LOVE_Q[h7]||'a deep, soulful presence')+'.</p><p>'+h7Lord+' sits in your '+ord(h7LordH)+' house — the house of <em>'+HTHEME[h7LordH-1]+'</em>, meaning the energy of partnership is experienced through that life domain.</p></div></div>'+
@@ -904,23 +1002,39 @@ function genLove(d){
     '<div class="ck-remedy"><div class="ck-remedy-title">Relationship Upayas</div><ul><li>For '+h7Lord+' (ruler of your 7th): '+(PLANET_UPAYA[abbr(h7Lord)]||'observe the planet\'s day')+'.</li><li>Keep a private journal for feelings you\'re tempted to manage in a partner rather than name out loud.</li><li>Before difficult conversations: a short walk or movement discharges reactive energy before it reaches your words.</li></ul></div>';
 }
 
-function genHealth(d){
+function genHealth(d, mode){
+  var isSimple = (mode === 'simplified');
   var h6=d.hSigns[6]; var h6Lord=RULERS[ZODIAC.indexOf(h6)];
   var bf=BODY_FOCUS[d.lagnaSign]||'Whole System';
   var STRESS_NOTE={
-    'Aries':'Heat, inflammation, and headaches tend to be the first signals.',
-    'Taurus':'The throat, jaw, and thyroid carry the weight of unexpressed emotion.',
-    'Gemini':'Anxiety, scattered thoughts, and respiratory sensitivity are primary stress channels.',
-    'Cancer':'The gut and chest are where emotional overwhelm lands first.',
-    'Leo':'The heart and spine carry the load — back tension and cardiovascular sensitivity.',
-    'Virgo':'Digestive upset and nervous-system overdrive are the classic stress signatures.',
-    'Libra':'Kidney function and lower back tension respond quickly to imbalance.',
-    'Scorpio':'Reproductive and eliminative systems carry suppressed intensity.',
-    'Sagittarius':'Hip and sciatic tension arise under prolonged mental stress.',
-    'Capricorn':'Joints, knees, and bone density are the long-term signals to watch.',
-    'Aquarius':'Circulatory irregularity and ankle tension are the body\'s first language.',
-    'Pisces':'Foot issues, immune sensitivity, and lymphatic sluggishness are the first signals.',
+    'Aries':'Headaches, heat, or tension in the head and eyes.',
+    'Taurus':'Throat, jaw, and neck tension when unexpressed feelings build up.',
+    'Gemini':'Nervous exhaustion, anxiety, or shallow breathing.',
+    'Cancer':'Digestive sensitivity or stomach tightness under emotional stress.',
+    'Leo':'Upper back tension, heart palpitations, or posture fatigue.',
+    'Virgo':'Stomach bloating, digestive slowdowns, and overthinking.',
+    'Libra':'Lower back aches and energy dips from balance disruption.',
+    'Scorpio':'Pelvic or reproductive organ sensitivity under intense stress.',
+    'Sagittarius':'Hip tightness or sciatic discomfort after mental strain.',
+    'Capricorn':'Knee stiffness, joint aches, or bone fatigue.',
+    'Aquarius':'Poor circulation, cold feet, or ankle tension.',
+    'Pisces':'Foot soreness, sluggish immunity, or feeling easily drained.'
   };
+
+  if(isSimple){
+    return '<div class="ck-hero-line">"Your vitality flourishes when you balance steady daily habits with emotional rest."</div>'+
+      '<div class="ck-stat-row"><div class="ck-stat"><div class="ck-stat-label">Health Sign</div><div class="ck-stat-value">'+h6+'</div></div><div class="ck-stat"><div class="ck-stat-label">Health Ruler</div><div class="ck-stat-value">'+h6Lord+'</div></div><div class="ck-stat"><div class="ck-stat-label">Body Sensitivity</div><div class="ck-stat-value">'+bf+'</div></div></div>'+
+      '<div class="ck-card"><div class="ck-eyebrow">Physical Wellbeing</div><h3 class="ck-card-title">Your Body Constitution</h3><div class="ck-card-body">'+
+      '<p><strong>What it means:</strong> Your physical health responds closely to emotional stress. Your primary sensitive area is <strong>'+bf+'</strong>.</p>'+
+      '<p><strong>Why it matters:</strong> Physical symptoms like '+(STRESS_NOTE[d.lagnaSign]||'body tension')+' are early signals from your nervous system to rest.</p>'+
+      '<div class="ck-remedy" style="margin-top:16px;"><div class="ck-remedy-title">Key Takeaways</div><ul><li>Maintain a consistent daily sleep schedule to protect your baseline energy.</li><li>Hydration, fresh air, and light daily walks act as natural health regulators.</li></ul></div>'+
+      '</div></div>'+
+      '<div class="ck-card ck-card-rose"><div class="ck-eyebrow">Stress Management</div><h3 class="ck-card-title">How to Reset Your Energy</h3><div class="ck-card-body">'+
+      '<p><strong>What it means:</strong> When feeling overwhelmed, quick physical movement or grounding rituals help clear mental clutter.</p>'+
+      '<p><strong>Why it matters:</strong> Preventing stress buildup is much easier than recovering from burn-out.</p>'+
+      '</div></div>';
+  }
+
   var STRENGTH_NOTE={
     'Aries':'Physical movement is your fastest reset — burn the energy before it becomes inflammation.',
     'Taurus':'Sensory pleasure — good food, warm baths, time in nature — is genuinely medicinal.',
@@ -957,10 +1071,26 @@ function genHealth(d){
     '<div class="ck-remedy"><div class="ck-remedy-title">Vitality Upayas</div><ul><li>Build one immovable daily ritual (same wake time, same short movement) — your Lagna heals through repetition, not novelty.</li><li>A 10-minute brain-dump journal before bed empties racing thoughts rather than carrying them into sleep.</li><li>'+(EX_NOTE[d.lagnaSign]||'Regular moderate movement outperforms extremes for your constitution.')+'</li></ul></div>';
 }
 
-function genWealth(d){
+function genWealth(d, mode){
+  var isSimple = (mode === 'simplified');
   var h2=d.hSigns[2]; var h11=d.hSigns[11];
   var h2ps=PORDER.filter(function(p){return d.pHouse[p]===2&&p!=='As';}).map(function(p){return PNAME[p]||p;});
   var h11ps=PORDER.filter(function(p){return d.pHouse[p]===11&&p!=='As';}).map(function(p){return PNAME[p]||p;});
+
+  if(isSimple){
+    return '<div class="ck-hero-line">"Financial abundance builds steadily through smart habits and long-term compounding."</div>'+
+      '<div class="ck-stat-row"><div class="ck-stat"><div class="ck-stat-label">Income House</div><div class="ck-stat-value">'+h2+'</div></div><div class="ck-stat"><div class="ck-stat-label">Gains House</div><div class="ck-stat-value">'+h11+'</div></div><div class="ck-stat"><div class="ck-stat-label">Wealth Energy</div><div class="ck-stat-value">'+(h2ps.length?h2ps.join(' + '):'Steady Growth')+'</div></div></div>'+
+      '<div class="ck-card"><div class="ck-eyebrow">Money &amp; Savings</div><h3 class="ck-card-title">How You Build Wealth</h3><div class="ck-card-body">'+
+      '<p><strong>What it means:</strong> Your income potential connects to <strong>'+h2+'</strong> energy. You earn best through clear communication, developing your skills, and building value.</p>'+
+      '<p><strong>Why it matters:</strong> Disciplined saving habits build long-term security far better than high-risk speculation.</p>'+
+      '<div class="ck-remedy" style="margin-top:16px;"><div class="ck-remedy-title">Key Takeaways</div><ul><li>Automate monthly savings as soon as income arrives.</li><li>Pause for 3 full days before making significant impulse purchases.</li></ul></div>'+
+      '</div></div>'+
+      '<div class="ck-card ck-card-rose"><div class="ck-eyebrow">Long-Term Gains</div><h3 class="ck-card-title">Abundance &amp; Financial Growth</h3><div class="ck-card-body">'+
+      '<p><strong>What it means:</strong> Your gains flow through <strong>'+h11+'</strong>. '+(WEALTH_H11[h11]||'Abundance builds through patient accumulation.')+'</p>'+
+      '<p><strong>Why it matters:</strong> Focusing on compounding growth over time protects your future independence.</p>'+
+      '</div></div>';
+  }
+
   var w2txt=h2ps.length?'<p><strong>'+h2ps.join(' and ')+'</strong> sit directly in your wealth house — '+getW2Note(h2ps)+'.</p>':'<p>With no planets in the 2nd house, your wealth is governed entirely by the 2nd lord\'s condition — study its placement carefully.</p>';
   return '<div class="ck-hero-line">"Wealth in your chart is not a lottery — it is a craft compounded year by patient year."</div>'+
     '<div class="ck-stat-row"><div class="ck-stat"><div class="ck-stat-label">2nd House</div><div class="ck-stat-value">'+h2+'</div></div><div class="ck-stat"><div class="ck-stat-label">11th House</div><div class="ck-stat-value">'+h11+'</div></div><div class="ck-stat"><div class="ck-stat-label">2nd House</div><div class="ck-stat-value">'+(h2ps.length?h2ps.join(' + '):'Empty')+'</div></div></div>'+
@@ -1051,14 +1181,29 @@ function generate(form){
   document.getElementById('r-facts').innerHTML=fHtml.join('');
 
   window._kd=data;
+  window._currentTab = 'overview';
+  window._kdMode = window._kdMode || 'simplified';
   renderTab('overview',data);
 }
 
 function renderTab(id,data){
-  data=data||window._kd;
+  id = id || window._currentTab || 'overview';
+  window._currentTab = id;
+  data = data || window._kd;
+  var mode = window._kdMode || 'simplified';
   var gens={overview:genOverview,career:genCareer,love:genLove,health:genHealth,wealth:genWealth};
-  document.getElementById('tab-content').innerHTML=(gens[id]||genOverview)(data);
+  var fn = gens[id] || genOverview;
+  document.getElementById('tab-content').innerHTML = fn(data, mode);
 }
+
+/* MODE TOGGLE (SIMPLIFIED | DETAILED) */
+document.getElementById('mode-toggle').addEventListener('click',function(e){
+  var btn = e.target.closest('.ck-mode-btn'); if(!btn) return;
+  document.querySelectorAll('.ck-mode-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  window._kdMode = btn.dataset.mode;
+  renderTab(window._currentTab || 'overview');
+});
 
 /* TAB NAV */
 document.getElementById('tab-nav').addEventListener('click',function(e){
