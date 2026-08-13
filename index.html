@@ -93,30 +93,50 @@
       100% { transform: scale(0.9) translate(30px, -20px); opacity: 0.4; }
     }
 
-    /* SHOOTING STARS */
+    /* ENHANCED SHOOTING STARS (METEORS) */
     .meteor {
       position: absolute;
-      width: 120px;
+      width: 160px;
       height: 2px;
-      background: linear-gradient(90deg, rgba(242,211,138,0.9), transparent);
+      background: linear-gradient(90deg, #f2d38a, rgba(201,162,75,0.7), transparent);
+      box-shadow: 0 0 10px rgba(242, 211, 138, 0.8), 0 0 20px rgba(201, 162, 75, 0.4);
       transform: rotate(-35deg);
       opacity: 0;
       pointer-events: none;
       z-index: 0;
-      animation: shootingStar var(--dur, 6s) linear var(--delay, 2s) infinite;
+      animation: shootingStar var(--dur, 5s) cubic-bezier(0.25, 0.1, 0.25, 1) var(--delay, 1s) infinite;
     }
 
     @keyframes shootingStar {
       0% { transform: translateX(0) translateY(0) rotate(-35deg); opacity: 0; }
-      10% { opacity: 0.9; }
-      22% { transform: translateX(-380px) translateY(260px) rotate(-35deg); opacity: 0; }
+      8% { opacity: 1; }
+      20% { transform: translateX(-480px) translateY(320px) rotate(-35deg); opacity: 0; }
       100% { opacity: 0; }
     }
 
-    /* STARFIELD */
+    /* ENHANCED STARFIELD WITH GLOW & TWINKLE */
     #starfield { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-    .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle var(--dur,5s) ease-in-out var(--delay,0s) infinite; }
-    @keyframes twinkle { 0%,100% { opacity:0.15; transform:scale(1); } 50% { opacity:1; transform:scale(1.5); } }
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      animation: twinkle var(--dur,5s) ease-in-out var(--delay,0s) infinite;
+    }
+    .star.gold-star {
+      background: #f2d38a;
+      box-shadow: 0 0 6px rgba(242, 211, 138, 0.8);
+    }
+    .star.white-star {
+      background: #ffffff;
+      box-shadow: 0 0 4px rgba(255, 255, 255, 0.7);
+    }
+    .star.violet-star {
+      background: #ece4f7;
+      box-shadow: 0 0 5px rgba(201, 162, 75, 0.6);
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.12; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.6); }
+    }
 
     /* SCREENS */
     .screen { position: relative; z-index: 1; }
@@ -470,19 +490,29 @@
 <script>
 /* COSMIC KUNDALI — Pure Vanilla JS Astrology Engine */
 
-/* STARFIELD & METEORS */
+/* ENHANCED DYNAMIC STARFIELD & SHOOTING STARS */
 (function(){
-  var sf=document.getElementById('starfield');
+  var sf = document.getElementById('starfield');
   if(!sf) return;
-  for(var i=0;i<120;i++){
-    var s=document.createElement('div'); s.className='star';
-    var sz=(Math.random()*2+0.5).toFixed(1);
-    s.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+(Math.random()*100).toFixed(1)+'%;left:'+(Math.random()*100).toFixed(1)+'%;--delay:'+(Math.random()*7).toFixed(1)+'s;--dur:'+(Math.random()*4+3).toFixed(1)+'s;opacity:'+(Math.random()*0.6+0.2).toFixed(2);
+  var types = ['gold-star', 'white-star', 'violet-star'];
+
+  for(var i = 0; i < 160; i++){
+    var s = document.createElement('div');
+    var cls = types[Math.floor(Math.random() * types.length)];
+    s.className = 'star ' + cls;
+    var sz = (Math.random() * 2.5 + 0.8).toFixed(1);
+    s.style.cssText = 'width:' + sz + 'px;height:' + sz + 'px;top:' + (Math.random() * 100).toFixed(1) + '%;left:' + (Math.random() * 100).toFixed(1) + '%;--delay:' + (Math.random() * 8).toFixed(1) + 's;--dur:' + (Math.random() * 4 + 3.5).toFixed(1) + 's;opacity:' + (Math.random() * 0.7 + 0.25).toFixed(2);
     sf.appendChild(s);
   }
-  for(var m=0;m<5;m++){
-    var met=document.createElement('div'); met.className='meteor';
-    met.style.cssText='top:'+(Math.random()*40+5).toFixed(1)+'%;left:'+(Math.random()*50+40).toFixed(1)+'%;--delay:'+(m*3.5+Math.random()*2).toFixed(1)+'s;--dur:'+(Math.random()*3+4).toFixed(1)+'s';
+
+  for(var m = 0; m < 8; m++){
+    var met = document.createElement('div');
+    met.className = 'meteor';
+    var topPos = (Math.random() * 45 + 2).toFixed(1);
+    var leftPos = (Math.random() * 40 + 55).toFixed(1);
+    var delayVal = (m * 2.2 + Math.random() * 1.5).toFixed(1);
+    var durVal = (Math.random() * 2.5 + 3.5).toFixed(1);
+    met.style.cssText = 'top:' + topPos + '%;left:' + leftPos + '%;--delay:' + delayVal + 's;--dur:' + durVal + 's';
     sf.appendChild(met);
   }
 })();
