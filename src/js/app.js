@@ -64,13 +64,23 @@ import html2pdf from 'html2pdf.js';
 
       div.innerHTML = '<span class="ck-city-name">' + cityName + '</span><span class="ck-city-badge">' + stateName + '</span>';
 
-      div.addEventListener('click', function() {
+      function selectCity(e) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        window._justSelectedCity = Date.now();
         input.value = item.display;
         if (latInput && item.data && item.data.lat !== undefined) {
           latInput.value = item.data.lat;
         }
         suggestions.classList.remove('show');
-      });
+        suggestions.innerHTML = '';
+      }
+
+      div.addEventListener('mousedown', selectCity);
+      div.addEventListener('touchstart', selectCity);
+      div.addEventListener('click', selectCity);
 
       suggestions.appendChild(div);
     });
@@ -382,6 +392,10 @@ if (kundaliFormEl) {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
+    }
+
+    if (window._justSelectedCity && Date.now() - window._justSelectedCity < 250) {
+      return false;
     }
 
     try {

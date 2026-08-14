@@ -294,10 +294,11 @@ input[type="date"]#f-dob::-webkit-datetime-edit-year-field:focus {
   border-radius: 10px;
   max-height: 240px;
   overflow-y: auto;
-  z-index: 100;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 25px rgba(201, 162, 75, 0.25);
+  z-index: 1000 !important;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.9), 0 0 30px rgba(201, 162, 75, 0.3);
   display: none;
   margin-top: 6px;
+  touch-action: manipulation;
 }
 .ck-city-suggestions.show {
   display: block;
