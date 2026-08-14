@@ -26,6 +26,53 @@
 
 ---
 
+## 🧮 Essential Astronomical & Astrological Calculations
+
+Cosmic Kundali uses pure mathematical algorithms to derive authentic Vedic Sidereal (Nirayana) charts:
+
+1. **Julian Day Number ($JD$) & UT Conversion**:
+   - Converts Gregorian date and 12-Hour/24-Hour birth time into Astronomical Julian Day Number ($JD$).
+   - Computes Universal Time ($UT$) by applying local longitude-derived time offset ($TZ = -lng / 15$).
+
+2. **Chitrapaksha / Lahiri Ayanamsa**:
+   - Calculates precise Sidereal Ayanamsa for the birth epoch:
+     $$\text{Ayanamsa} = 23.85^\circ + 0.01396^\circ \times \frac{JD - 2451545.0}{365.25}$$
+   - Converts Tropical positions to Sidereal ($Nirayana$):
+     $$\text{Sidereal Longitude} = (\text{Tropical Longitude} - \text{Ayanamsa}) \pmod{360^\circ}$$
+
+3. **Planetary Ephemeris Calculations**:
+   - High-precision orbital positions for **Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, Rahu (North Node), and Ketu (South Node)**.
+   - Calculates true lunar nodes ($\text{Ketu} = (\text{Rahu} + 180^\circ) \pmod{360^\circ}$).
+
+4. **Ascendant (Lagna) Sign & Degree**:
+   - Computes Local Sidereal Time ($LST$) from $JD$ and birth longitude:
+     $$LST = (100.46^\circ + 0.985647366^\circ \times D + \text{longitude} + 15 \times UT) \pmod{360^\circ}$$
+   - Solves for Tropical Ascendant ($\tan \text{Asc} = \frac{\cos LST}{-\sin LST \cos \epsilon - \tan \phi \sin \epsilon}$) where $\phi$ is birth latitude and $\epsilon$ is Earth's true obliquity ($23.4393^\circ$).
+   - Subtracts Lahiri Ayanamsa to derive the exact **Sidereal Lagna Sign & Degree**.
+
+5. **27 Nakshatras & 4 Padas System**:
+   - Maps Moon's Sidereal Longitude into 27 Nakshatras ($13^\circ 20'$ per Nakshatra):
+     $$\text{Nakshatra Index} = \left\lfloor \frac{\text{Moon Lon}}{13.33333^\circ} \right\rfloor$$
+   - Determines exact Pada (quarter, $3^\circ 20'$ each) and ruler deity.
+
+6. **120-Year Vimshottari Dasha Balance**:
+   - Computes exact remaining balance of birth Mahadasha based on Moon's position inside its Nakshatra.
+   - Generates complete timeline sequence for all 9 Mahadashas (Ketu: 7y, Venus: 20y, Sun: 6y, Moon: 10y, Mars: 7y, Rahu: 18y, Jupiter: 16y, Saturn: 19y, Mercury: 17y) and nested Antardashas.
+
+7. **Vedic Planetary Yogas Detection**:
+   - **Gajakesari Yoga**: Jupiter in Kendra ($1, 4, 7, 10$) from Moon.
+   - **Budhaditya Yoga**: Sun and Mercury conjunct in the same Rashi.
+   - **Pancha Mahapurusha Yogas**: Exalted/Own sign Kendra placements for Mars (Ruchaka), Mercury (Bhadra), Jupiter (Hamsa), Venus (Malavya), Saturn (Shasha).
+   - **Kaal Sarp Yoga**: All 7 major planets enclosed between Rahu and Ketu nodes.
+
+8. **Sarvashtakavarga (AV Point System)**:
+   - Computes 8-fold Ashtakavarga score (0–56 range) across all 12 Rashi houses for strength analysis.
+
+9. **Global & 400+ Indian Cities Geocoding**:
+   - Built-in database for 400+ Indian cities + live OpenStreetMap Nominatim Geocoding API for 100% location coverage.
+
+---
+
 ## 🛠️ Project Structure
 
 ```
