@@ -476,12 +476,173 @@ function genWealth(d, mode){
     '<div class="ck-remedy"><div class="ck-remedy-title">Wealth Upayas</div><ul><li>Automate saving on payday before the money feels available — this routes around impulse patterns.</li><li>Before any investment that feels urgent or exciting, sit with it for 3 full days — your gains house rewards patience, not speed.</li><li>Thursdays: a small act of generosity or study strengthens Jupiter, which governs expansion.</li></ul></div>';
 }
 
-function getW2Note(ps){
-  if(ps.indexOf('Jupiter')>=0&&ps.indexOf('Saturn')>=0)return 'growth and discipline stand guard — a genuinely strong signature for compounding wealth';
-  if(ps.indexOf('Jupiter')>=0)return 'Jupiter here is a classic wealth-house blessing — expansion and optimism colour your financial story';
-  if(ps.indexOf('Saturn')>=0)return 'Saturn demands patience but rewards consistency with lasting financial structure';
-  if(ps.indexOf('Venus')>=0)return 'Venus here — income may come through beauty, luxury, or relationship';
-  return 'these planets colour how wealth accumulates and what it means to you';
+function renderCleanPdfSvgChart(hSigns, pHouse, planetsLon) {
+  var hPlanets = {};
+  PORDER.forEach(function(p) {
+    var h = pHouse[p];
+    if (h) { if (!hPlanets[h]) hPlanets[h] = []; hPlanets[h].push(p); }
+  });
+
+  var polygonsHtml = '';
+  for (var h = 1; h <= 12; h++) {
+    polygonsHtml += '<polygon points="' + HPOLY[h] + '" fill="' + (hPlanets[h] ? 'rgba(201,162,75,0.12)' : '#150f2b') + '" stroke="rgba(201,162,75,0.7)" stroke-width="1.5"/>';
+  }
+
+  var labelsHtml = '';
+  for (var h = 1; h <= 12; h++) {
+    var pos = HLABEL[h]; var lx = pos[0], ly = pos[1];
+    var dy = (h === 1 || h === 7) ? 14 : (h === 4 || h === 10) ? 0 : 12;
+    labelsHtml += '<text x="' + lx + '" y="' + ly + '" text-anchor="middle" fill="#c9a24b" font-size="10" font-family="Inter, sans-serif" font-weight="600">' + h + '</text>';
+    labelsHtml += '<text x="' + lx + '" y="' + (ly + dy) + '" text-anchor="middle" fill="#a99bcb" font-size="8" font-family="Inter, sans-serif">' + hSigns[h] + '</text>';
+  }
+
+  var planetsHtml = '';
+  for (var h = 1; h <= 12; h++) {
+    if (!hPlanets[h]) continue;
+    var ps = hPlanets[h]; var cp = HCONTENT[h]; var cx = cp[0], cy = cp[1];
+    var perRow = ps.length > 3 ? 3 : ps.length;
+    ps.forEach(function(p, i) {
+      var row = Math.floor(i / perRow), col = i % perRow;
+      var rowCount = Math.ceil(ps.length / perRow);
+      var px = cx + (col - (perRow - 1) / 2) * 34;
+      var py = cy + (row - (rowCount - 1) / 2) * 22;
+      var isAsc = (p === 'As');
+      var fillCol = isAsc ? '#f2d38a' : '#ffffff';
+      var lon = planetsLon[p] !== undefined ? planetsLon[p] : 0;
+      var deg = Math.floor(lon % 30) + '°';
+      planetsHtml += '<text x="' + px + '" y="' + py + '" text-anchor="middle" fill="' + fillCol + '" font-size="12" font-family="Cinzel, serif" font-weight="700">' + p + '</text>';
+      planetsHtml += '<text x="' + px + '" y="' + (py + 10) + '" text-anchor="middle" fill="#a99bcb" font-size="8" font-family="Inter, sans-serif">' + deg + '</text>';
+    });
+  }
+
+  return '<svg viewBox="0 0 400 400" style="width:100%; max-width:280px; height:auto; background:#150f2b; border:1px solid #c9a24b; border-radius:8px;">' +
+    '<rect x="1" y="1" width="398" height="398" fill="#150f2b" stroke="#c9a24b" stroke-width="2"/>' +
+    polygonsHtml +
+    labelsHtml +
+    planetsHtml +
+    '</svg>';
+}
+
+function buildPdfReportHtml(d) {
+  var name = d.name || 'User';
+  var dobDate = d.dobDate || new Date();
+  var dobStr = dayName(dobDate) + ', ' + dobDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+  var tobStr = d.tob || '';
+  var placeStr = d.place || '';
+
+  var sunSign = d.sunSign;
+  var moonSign = d.moonSign;
+  var lagnaSign = d.lagnaSign;
+  var moonNak = d.moonNak;
+  var lagnaNak = d.lagnaNak;
+
+  var cd = currentDasha(d.dashas);
+  var cAntar = null;
+  if (cd) {
+    var antars = calcAntardashas(cd.planet, cd.start, cd.end);
+    var now = new Date();
+    cAntar = antars.find(function(a){ return a.start <= now && a.end > now; });
+  }
+
+  var signature = detectChartSignature(d);
+  var svgChartHtml = renderCleanPdfSvgChart(d.hSigns, d.pHouse, d.planetsLon);
+
+  var pTableRows = PORDER.map(function(p) {
+    var lon = d.planetsLon[p] || 0;
+    var signName = ZODIAC[signOf(lon)];
+    var degStr = fmtDegMin(lon);
+    var houseNum = d.pHouse[p] || 1;
+    var nakName = NAKSHATRA[nakOf(lon)];
+    var dig = getPlanetDignity(p, lon);
+    var digBadge = dig.status === 'exalted' ? '<span style="color:#8fb99a; font-weight:600;">Exalted</span>' :
+                   dig.status === 'own' ? '<span style="color:#f2d38a; font-weight:600;">Swagriha</span>' :
+                   dig.status === 'debilitated' ? '<span style="color:#c26b7a; font-weight:600;">Debilitated</span>' : 'Neutral';
+
+    return '<tr>' +
+      '<td style="padding:5px 6px; border-bottom:1px solid rgba(201,162,75,0.2); font-weight:600; color:#f2d38a;">' + (PNAME[p] || p) + '</td>' +
+      '<td style="padding:5px 6px; border-bottom:1px solid rgba(201,162,75,0.2); color:#ece4f7;">' + signName + ' (' + degStr + ')</td>' +
+      '<td style="padding:5px 6px; border-bottom:1px solid rgba(201,162,75,0.2); color:#ffffff; text-align:center;">H' + houseNum + '</td>' +
+      '<td style="padding:5px 6px; border-bottom:1px solid rgba(201,162,75,0.2); color:#a99bcb;">' + nakName + '</td>' +
+      '<td style="padding:5px 6px; border-bottom:1px solid rgba(201,162,75,0.2); text-align:right;">' + digBadge + '</td>' +
+      '</tr>';
+  }).join('');
+
+  return '<div id="pdf-report-container" style="width:720px; padding:24px; background:#0a0818; color:#ffffff; font-family:\'Inter\', sans-serif; box-sizing:border-box;">' +
+
+    /* PAGE 1: HEADER & CHART AT A GLANCE */
+    '<div class="pdf-page" style="page-break-after:always;">' +
+      '<div style="text-align:center; border-bottom:2px solid #c9a24b; padding-bottom:14px; margin-bottom:18px;">' +
+        '<div style="font-family:\'Cinzel\', serif; font-size:11px; letter-spacing:0.3em; color:#c9a24b; text-transform:uppercase;">✦ Cosmic Kundali Executive Report ✦</div>' +
+        '<h1 style="font-family:\'Cormorant Garamond\', serif; font-size:30px; color:#f2d38a; margin:4px 0;">' + name + '\'s Birth Chart Summary</h1>' +
+        '<p style="font-size:12px; color:#a99bcb; margin:0;">' + (d.gender || 'User') + ' &middot; Born ' + dobStr + ' at ' + tobStr + ' &middot; ' + placeStr + '</p>' +
+        '<div style="display:flex; justify-content:center; gap:10px; margin-top:10px; flex-wrap:wrap;">' +
+          '<span style="background:rgba(201,162,75,0.15); border:1px solid #c9a24b; color:#f2d38a; padding:4px 12px; border-radius:999px; font-size:11px; font-weight:600;">Sun in ' + sunSign + '</span>' +
+          '<span style="background:rgba(201,162,75,0.15); border:1px solid #c9a24b; color:#f2d38a; padding:4px 12px; border-radius:999px; font-size:11px; font-weight:600;">Moon in ' + moonSign + ' (' + moonNak + ')</span>' +
+          '<span style="background:rgba(201,162,75,0.15); border:1px solid #c9a24b; color:#f2d38a; padding:4px 12px; border-radius:999px; font-size:11px; font-weight:600;">Ascendant ' + lagnaSign + ' (' + lagnaNak + ')</span>' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="display:grid; grid-template-columns:300px 1fr; gap:18px; margin-bottom:18px; align-items:start;">' +
+        '<div style="background:#150f2b; border:1px solid #c9a24b; border-radius:12px; padding:12px; text-align:center;">' +
+          '<div style="font-family:\'Cinzel\', serif; font-size:11px; color:#c9a24b; letter-spacing:0.1em; margin-bottom:6px;">Vedic Lagna Kundali</div>' +
+          svgChartHtml +
+        '</div>' +
+        '<div style="background:#1c1436; border:1px solid rgba(201,162,75,0.3); border-radius:12px; padding:12px;">' +
+          '<div style="font-family:\'Cinzel\', serif; font-size:11px; color:#c9a24b; letter-spacing:0.1em; margin-bottom:6px;">Planetary Degrees &amp; Dignities</div>' +
+          '<table style="width:100%; border-collapse:collapse; font-size:10.5px;">' +
+            '<thead><tr style="color:#c9a24b; text-align:left; border-bottom:1px solid #c9a24b;"><th style="padding:4px 6px;">Planet</th><th style="padding:4px 6px;">Sign &amp; Deg</th><th style="padding:4px 6px; text-align:center;">House</th><th style="padding:4px 6px;">Nakshatra</th><th style="padding:4px 6px; text-align:right;">Dignity</th></tr></thead>' +
+            '<tbody>' + pTableRows + '</tbody>' +
+          '</table>' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="background:linear-gradient(135deg, rgba(201,162,75,0.2), rgba(28,20,54,0.9)); border:1px solid #c9a24b; border-radius:10px; padding:10px 16px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">' +
+        '<div><div style="font-family:\'Cinzel\', serif; font-size:10px; color:#c9a24b; letter-spacing:0.15em; text-transform:uppercase;">Active Dasha Period</div><div style="font-size:13px; font-weight:600; color:#ffffff; margin-top:2px;">Mahadasha: <span style="color:#f2d38a;">' + (cd ? PNAME[cd.planet] : 'Sun') + '</span> &middot; Antardasha: <span style="color:#f2d38a;">' + (cAntar ? PNAME[cAntar.planet] : 'Rahu') + '</span></div></div>' +
+        '<div style="font-size:11px; color:#a99bcb; text-align:right;">Active until <b style="color:#ffffff;">' + (cAntar ? fmtDate(cAntar.end) : 'Future') + '</b></div>' +
+      '</div>' +
+    '</div>' +
+
+    /* PAGE 2: LIFE PILLARS SUMMARY CARDS */
+    '<div class="pdf-page">' +
+      '<div style="font-family:\'Cinzel\', serif; font-size:12px; letter-spacing:0.2em; color:#c9a24b; text-transform:uppercase; margin-bottom:14px; text-align:center; border-bottom:1px solid rgba(201,162,75,0.3); padding-bottom:8px;">✦ Executive Life Pillar Cards ✦</div>' +
+
+      '<div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px;">' +
+        '<div style="background:#1c1436; border:1px solid rgba(201,162,75,0.3); border-radius:10px; padding:14px;">' +
+          '<div style="font-family:\'Cinzel\', serif; font-size:10px; color:#c9a24b; letter-spacing:0.1em; text-transform:uppercase;">1. Identity &amp; Soul</div>' +
+          '<div style="font-family:\'Cormorant Garamond\', serif; font-size:16px; color:#f2d38a; font-weight:600; margin:4px 0 6px;">' + lagnaSign + ' Ascendant / ' + moonSign + ' Moon</div>' +
+          '<p style="font-size:11px; color:#ffffff; line-height:1.5; margin:0;">' + signature.summary + '</p>' +
+        '</div>' +
+
+        '<div style="background:#1c1436; border:1px solid rgba(201,162,75,0.3); border-radius:10px; padding:14px;">' +
+          '<div style="font-family:\'Cinzel\', serif; font-size:10px; color:#c9a24b; letter-spacing:0.1em; text-transform:uppercase;">2. Career &amp; Karma (10th House)</div>' +
+          '<div style="font-family:\'Cormorant Garamond\', serif; font-size:16px; color:#f2d38a; font-weight:600; margin:4px 0 6px;">' + d.hSigns[10] + ' &middot; Ruled by ' + RULERS[ZODIAC.indexOf(d.hSigns[10])] + '</div>' +
+          '<p style="font-size:11px; color:#ffffff; line-height:1.5; margin:0;">Suited for ' + (CAREER_Q[d.hSigns[10]] || 'purposeful leadership') + '. ' + (DASHA_CAREER[cd ? cd.planet : 'Su'] || '') + '</p>' +
+        '</div>' +
+
+        '<div style="background:#1c1436; border:1px solid rgba(201,162,75,0.3); border-radius:10px; padding:14px;">' +
+          '<div style="font-family:\'Cinzel\', serif; font-size:10px; color:#c9a24b; letter-spacing:0.1em; text-transform:uppercase;">3. Love &amp; Union (7th House)</div>' +
+          '<div style="font-family:\'Cormorant Garamond\', serif; font-size:16px; color:#f2d38a; font-weight:600; margin:4px 0 6px;">' + d.hSigns[7] + ' &middot; Venus in House ' + d.pHouse['Ve'] + '</div>' +
+          '<p style="font-size:11px; color:#ffffff; line-height:1.5; margin:0;">Partnership style seeks ' + (LOVE_Q[d.hSigns[7]] || 'harmony and deep trust') + '. ' + (VENUS_NOTE[d.pHouse['Ve']] || '') + '</p>' +
+        '</div>' +
+
+        '<div style="background:#1c1436; border:1px solid rgba(201,162,75,0.3); border-radius:10px; padding:14px;">' +
+          '<div style="font-family:\'Cinzel\', serif; font-size:10px; color:#c9a24b; letter-spacing:0.1em; text-transform:uppercase;">4. Health &amp; Vitality (6th House)</div>' +
+          '<div style="font-family:\'Cormorant Garamond\', serif; font-size:16px; color:#f2d38a; font-weight:600; margin:4px 0 6px;">' + d.hSigns[6] + ' &middot; Focus: ' + (BODY_FOCUS[lagnaSign] || 'Whole Body') + '</div>' +
+          '<p style="font-size:11px; color:#ffffff; line-height:1.5; margin:0;">Physical health responds to stress management. Key focus: ' + (BODY_FOCUS[lagnaSign] || 'Immunity & rest') + '.</p>' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="background:#1c1436; border:1px solid rgba(201,162,75,0.3); border-radius:10px; padding:14px; margin-bottom:16px;">' +
+        '<div style="font-family:\'Cinzel\', serif; font-size:10px; color:#c9a24b; letter-spacing:0.1em; text-transform:uppercase;">5. Wealth &amp; Gains (2nd &amp; 11th Houses)</div>' +
+        '<div style="font-family:\'Cormorant Garamond\', serif; font-size:16px; color:#f2d38a; font-weight:600; margin:4px 0 6px;">Assets in ' + d.hSigns[2] + ' &middot; Revenue Channels in ' + d.hSigns[11] + '</div>' +
+        '<p style="font-size:11px; color:#ffffff; line-height:1.5; margin:0;">' + (WEALTH_H11[d.hSigns[11]] || 'Wealth compounds steadily through patient financial discipline.') + '</p>' +
+      '</div>' +
+
+      '<div style="text-align:center; font-family:\'Cinzel\', serif; font-size:11px; letter-spacing:0.2em; color:#f2d38a; text-transform:uppercase; padding-top:12px; border-top:1px solid rgba(201,162,75,0.3);">' +
+        '✦ Designed &amp; Developed by <strong>ADM</strong> ✦' +
+      '</div>' +
+    '</div>' +
+  '</div>';
 }
 
 window.NAK_DESC = NAK_DESC;
@@ -502,3 +663,5 @@ window.genLove = genLove;
 window.genHealth = genHealth;
 window.genWealth = genWealth;
 window.getW2Note = getW2Note;
+window.renderCleanPdfSvgChart = renderCleanPdfSvgChart;
+window.buildPdfReportHtml = buildPdfReportHtml;
