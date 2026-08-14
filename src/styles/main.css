@@ -355,24 +355,27 @@ input[type="date"]#f-dob::-webkit-datetime-edit-year-field:focus {
   text-transform: uppercase;
 }
 
-/* TIME OF BIRTH REDESIGN (48px Height & No Spinner Arrows) */
-.ck-time-group { display:flex; gap:8px; align-items:center; width:100%; }
+/* TIME OF BIRTH REDESIGN (100% Full-Width Stretch) */
+.ck-time-group { display:flex; gap:10px; align-items:center; width:100%; box-sizing:border-box; }
 .ck-time-input {
   height: 48px;
-  flex: 1;
+  flex: 1 1 0%;
+  width: 0;
+  min-width: 0;
   text-align: center;
   font-family: 'Inter', sans-serif;
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--parchment);
   background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 0 8px;
+  padding: 0 10px;
   outline: none;
   transition: border-color 0.25s, box-shadow 0.25s;
   -webkit-appearance: none;
   -moz-appearance: textfield;
+  box-sizing: border-box;
 }
 .ck-time-input::-webkit-outer-spin-button,
 .ck-time-input::-webkit-inner-spin-button {
@@ -394,14 +397,17 @@ input[type="date"]#f-dob::-webkit-datetime-edit-year-field:focus {
   color: var(--gold);
   font-family: 'Cinzel', serif;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
   user-select: none;
+  flex: 0 0 auto;
 }
 /* SEGMENTED AM/PM TOGGLE PILL */
 .ck-ampm-segmented {
   display: flex;
   height: 48px;
-  flex: 1.4;
+  flex: 1.2 1 0%;
+  width: 0;
+  min-width: 0;
   background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
