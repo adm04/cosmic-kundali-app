@@ -397,24 +397,37 @@ input[type="date"]#f-dob::-webkit-datetime-edit-year-field:focus {
   font-size: 18px;
   user-select: none;
 }
-.ck-time-ampm {
+/* SEGMENTED AM/PM TOGGLE PILL */
+.ck-ampm-segmented {
+  display: flex;
   height: 48px;
-  flex: 1.2;
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--parchment);
+  flex: 1.4;
   background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 0 12px;
-  cursor: pointer;
-  outline: none;
-  transition: border-color 0.25s, box-shadow 0.25s;
+  padding: 3px;
+  gap: 3px;
+  box-sizing: border-box;
 }
-.ck-time-ampm:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.25);
+.ck-ampm-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  color: var(--muted);
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  outline: none;
+}
+.ck-ampm-btn.active {
+  background: var(--gold-bright);
+  color: #0d0822;
+  font-weight: 700;
+  box-shadow: 0 0 12px rgba(242, 211, 138, 0.5);
 }
 
 .generate-btn {

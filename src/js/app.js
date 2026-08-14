@@ -180,23 +180,35 @@ import html2pdf from 'html2pdf.js';
   });
 })();
 
+/* AM/PM SEGMENTED TOGGLE CONTROLLER */
+(function(){
+  var wrap = document.getElementById('ampm-segmented');
+  var hiddenInp = document.getElementById('f-tob-ampm');
+  if(!wrap || !hiddenInp) return;
+
+  wrap.addEventListener('click', function(e){
+    var btn = e.target.closest('.ck-ampm-btn');
+    if(!btn) return;
+    e.preventDefault();
+    wrap.querySelectorAll('.ck-ampm-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    hiddenInp.value = btn.dataset.value;
+  });
+})();
+
 /* TIME OF BIRTH AUTO-ADVANCE & FORMATTING */
 (function(){
   var hrInp = document.getElementById('f-tob-hr');
   var minInp = document.getElementById('f-tob-min');
-  var ampmSel = document.getElementById('f-tob-ampm');
 
   if(hrInp && minInp){
+    hrInp.addEventListener('focus', function(){ this.select(); });
+    minInp.addEventListener('focus', function(){ this.select(); });
+
     hrInp.addEventListener('input', function(){
       if(this.value.length >= 2){
         minInp.focus();
         minInp.select();
-      }
-    });
-
-    minInp.addEventListener('input', function(){
-      if(this.value.length >= 2 && ampmSel){
-        ampmSel.focus();
       }
     });
 
