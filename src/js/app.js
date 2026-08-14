@@ -30,18 +30,19 @@ import html2pdf from 'html2pdf.js';
 
   function getLocalMatches(val) {
     var keys = [];
-    var seen = {};
+    var seenCity = {};
     var cityMap = (typeof CITIES !== 'undefined' ? CITIES : (window.CITIES || {}));
     for (var k in cityMap) {
       if (k.indexOf(val) >= 0) {
         var display = capitalize(k);
-        if (!seen[display]) {
-          seen[display] = true;
+        var baseCity = display.split(',')[0].trim().toLowerCase();
+        if (!seenCity[baseCity]) {
+          seenCity[baseCity] = true;
           keys.push({ raw: k, display: display, data: cityMap[k], source: 'local' });
         }
       }
     }
-    return keys.slice(0, 10);
+    return keys.slice(0, 8);
   }
 
   function renderItems(itemsList) {
