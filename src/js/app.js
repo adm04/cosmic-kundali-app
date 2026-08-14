@@ -1,4 +1,5 @@
 /* MAIN APPLICATION CONTROLLER */
+import html2pdf from 'html2pdf.js';
 
 /* POPULATE YEAR SELECT (1920–2026) */
 (function(){
@@ -394,11 +395,11 @@ if(pdfBtn){
 
       var tempWrap = document.createElement('div');
       tempWrap.id = 'pdf-export-temp-wrap';
-      tempWrap.style.cssText = 'position:fixed; inset:0; background:rgba(10,8,24,0.96); z-index:99999; display:flex; flex-direction:column; align-items:center; overflow-y:auto; padding:30px 10px; backdrop-filter:blur(12px);';
+      tempWrap.style.cssText = 'position:fixed; inset:0; background:#0a0818; z-index:99999; display:flex; flex-direction:column; align-items:center; overflow-y:auto; padding:30px 10px; backdrop-filter:blur(12px);';
 
       var loadingNotice = document.createElement('div');
-      loadingNotice.style.cssText = 'font-family:\'Cinzel\', serif; font-size:12px; letter-spacing:0.2em; color:#f2d38a; text-transform:uppercase; margin-bottom:20px; background:rgba(201,162,75,0.15); border:1px solid #c9a24b; padding:10px 24px; border-radius:999px;';
-      loadingNotice.innerHTML = '✦ Generating High-Resolution PDF Report... ✦';
+      loadingNotice.style.cssText = 'font-family:\'Cinzel\', serif; font-size:12px; letter-spacing:0.2em; color:#f2d38a; text-transform:uppercase; margin-bottom:20px; background:rgba(201,162,75,0.15); border:1px solid #c9a24b; padding:10px 24px; border-radius:999px; text-align:center;';
+      loadingNotice.innerHTML = '✦ Generating High-Resolution PDF Report... Please Wait ✦';
       tempWrap.appendChild(loadingNotice);
 
       var reportHolder = document.createElement('div');
@@ -410,7 +411,7 @@ if(pdfBtn){
       var targetEl = reportHolder.firstElementChild || reportHolder;
 
       setTimeout(function(){
-        if(typeof html2pdf !== 'undefined'){
+        try {
           var opt = {
             margin: [0.2, 0.2, 0.2, 0.2],
             filename: nameClean + '_Cosmic_Kundali_Report.pdf',
@@ -420,18 +421,25 @@ if(pdfBtn){
             pagebreak: { mode: ['css', 'legacy'] }
           };
 
-          html2pdf().set(opt).from(targetEl).save().then(function(){
-            if(document.body.contains(tempWrap)) document.body.removeChild(tempWrap);
-          }).catch(function(err){
-            console.warn('html2pdf fallback to print:', err);
-            if(document.body.contains(tempWrap)) document.body.removeChild(tempWrap);
+          var worker = html2pdf();
+          if (worker && typeof worker.set === 'function') {
+            worker.set(opt).from(targetEl).save().then(function(){
+              if(document.body.contains(tempWrap)) document.body.removeChild(tempWrap);
+            }).catch(function(err){
+              console.warn('html2pdf error, using print fallback:', err);
+              if(document.body.contains(tempWrap)) document.body.removeChild(tempWrap);
+              window.print();
+            });
+          } else {
             window.print();
-          });
-        } else {
+            if(document.body.contains(tempWrap)) document.body.removeChild(tempWrap);
+          }
+        } catch(workerErr) {
+          console.warn('Worker execution fallback:', workerErr);
           window.print();
           if(document.body.contains(tempWrap)) document.body.removeChild(tempWrap);
         }
-      }, 300);
+      }, 400);
 
     } catch (exportErr) {
       console.error('PDF export error:', exportErr);
