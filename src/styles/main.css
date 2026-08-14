@@ -132,6 +132,7 @@ body {
 #screen-result { display:none; padding:28px 24px 60px; max-width:1100px; margin:0 auto; }
 
 /* FORM CARD FLOATING ANIMATION */
+/* FORM CARD OPENING & FLOATING ANIMATION */
 .form-wrap {
   position: relative;
   z-index: 2;
@@ -143,13 +144,59 @@ body {
   padding: 44px 40px 48px;
   backdrop-filter: blur(16px);
   box-shadow: 0 0 50px rgba(90, 60, 150, 0.25), 0 0 100px rgba(201, 162, 75, 0.08);
-  animation: cardFloat 8s ease-in-out infinite alternate;
+  animation: openingCardEntrance 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards, cardFloat 8s ease-in-out 1.2s infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes openingCardEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(35px) scale(0.93);
+    filter: blur(8px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.01);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
 }
 
 @keyframes cardFloat {
   0% { transform: translateY(0); box-shadow: 0 10px 40px rgba(90, 60, 150, 0.25), 0 0 80px rgba(201, 162, 75, 0.05); }
   100% { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(90, 60, 150, 0.35), 0 0 120px rgba(201, 162, 75, 0.12); }
 }
+
+/* STAGGERED ENTRANCE FOR FORM ELEMENTS */
+.form-kicker, .form-title, .form-sub, .form-grid, .generate-btn {
+  animation: openingStagger 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.form-kicker { animation-delay: 0.15s; }
+.form-title  { animation-delay: 0.25s; }
+.form-sub    { animation-delay: 0.35s; }
+.form-grid   { animation-delay: 0.45s; }
+.generate-btn { animation-delay: 0.58s; }
+
+@keyframes openingStagger {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* SUBMISSION PORTAL WARP EXIT */
+.form-wrap.is-warping {
+  animation: portalWarpExit 0.65s cubic-bezier(0.7, 0, 0.84, 0) forwards !important;
+}
+
+@keyframes portalWarpExit {
+  0% { transform: scale(1) translateY(0); opacity: 1; filter: blur(0px); }
+  40% { transform: scale(1.06) translateY(-12px); opacity: 0.85; filter: blur(1px); }
+  100% { transform: scale(0.85) translateY(45px); opacity: 0; filter: blur(14px); }
+}
+
 .form-kicker { font-family:'Cinzel',serif; letter-spacing:0.35em; font-size:10.5px; color:var(--gold); text-transform:uppercase; text-align:center; margin-bottom:12px; }
 .form-title { font-family:'Cormorant Garamond',serif; font-weight:600; font-style:italic; font-size:clamp(26px,5vw,40px); color:var(--gold-bright); text-align:center; line-height:1.15; margin-bottom:8px; text-shadow:0 0 22px rgba(242,211,138,0.25); }
 .form-sub { color:var(--muted); font-size:13px; text-align:center; margin-bottom:32px; line-height:1.55; }
@@ -505,11 +552,101 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter:invert(0.7) sepia
 
 .ck-footer-note { text-align:center; font-size:11.5px; color:var(--muted); font-style:italic; margin-top:30px; max-width:620px; margin-left:auto; margin-right:auto; line-height:1.6; }
 
-/* LOADING */
-#loading { position:fixed; inset:0; background:rgba(10,8,24,0.93); z-index:100; display:none; align-items:center; justify-content:center; flex-direction:column; gap:20px; }
-#loading.show { display:flex; }
-.spinner { width:48px; height:48px; border:2px solid rgba(201,162,75,0.2); border-top-color:var(--gold); border-radius:50%; animation:ck-spin 1s linear infinite; }
-.loading-txt { font-family:'Cinzel',serif; font-size:12px; letter-spacing:0.2em; color:var(--gold); text-transform:uppercase; }
+/* COSMIC STARGATE LOADING OVERLAY & RESULT ENTRANCE */
+#loading {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(28, 20, 54, 0.98), rgba(10, 8, 24, 0.98));
+  backdrop-filter: blur(24px);
+  z-index: 100;
+  display: flex;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease-in-out;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 24px;
+}
+
+#loading.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.stargate-spinner {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stargate-ring-outer {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px dashed rgba(242, 211, 138, 0.6);
+  border-top-color: var(--gold-bright);
+  animation: ck-spin 4s linear infinite;
+  box-shadow: 0 0 25px rgba(242, 211, 138, 0.4);
+}
+
+.stargate-ring-inner {
+  position: absolute;
+  inset: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(201, 162, 75, 0.3);
+  border-bottom-color: var(--gold-bright);
+  animation: ck-spin-rev 2.5s linear infinite;
+}
+
+.stargate-core {
+  width: 22px;
+  height: 22px;
+  background: var(--gold-bright);
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(242, 211, 138, 0.9), 0 0 60px rgba(201, 162, 75, 0.6);
+  animation: stargatePulse 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes stargatePulse {
+  0% { transform: scale(0.75); opacity: 0.5; }
+  100% { transform: scale(1.35); opacity: 1; }
+}
+
+.loading-txt {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  letter-spacing: 0.25em;
+  color: var(--gold-bright);
+  text-transform: uppercase;
+  text-shadow: 0 0 15px rgba(242, 211, 138, 0.5);
+  animation: textGlow 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+  0% { opacity: 0.6; transform: translateY(0); }
+  100% { opacity: 1; transform: translateY(-2px); }
+}
+
+#screen-result.is-entering {
+  animation: resultEntrance 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes resultEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(45px) scale(0.96);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
 
 .adm-footer-credit {
   text-align: center;

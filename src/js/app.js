@@ -213,16 +213,33 @@ if(kundaliFormEl){
     if(!name){ alert('Please enter your full name.'); return; }
     if(!place){ alert('Please enter your birth city.'); return; }
 
-    var loader=document.getElementById('loading');
-    loader.classList.add('show');
+    var formWrap = document.querySelector('.form-wrap');
+    if(formWrap) formWrap.classList.add('is-warping');
+
+    var loader = document.getElementById('loading');
+    var loaderMsg = document.getElementById('loading-msg');
+
+    setTimeout(function(){
+      if(loader) loader.classList.add('show');
+      if(loaderMsg) loaderMsg.textContent = 'Casting Your Cosmic Kundali…';
+    }, 200);
 
     setTimeout(function(){
       generate({name:name,gender:gender,dob:dobStr,tob:tobStr,place:place,lat:lat,hr:hr24,mn:tMin});
-      loader.classList.remove('show');
-      document.getElementById('screen-form').style.display='none';
-      document.getElementById('screen-result').style.display='block';
-      window.scrollTo({top:0,behavior:'smooth'});
-    },400);
+      if(loader) loader.classList.remove('show');
+      if(formWrap) formWrap.classList.remove('is-warping');
+
+      document.getElementById('screen-form').style.display = 'none';
+      var resScreen = document.getElementById('screen-result');
+      resScreen.style.display = 'block';
+      resScreen.classList.add('is-entering');
+
+      window.scrollTo({top:0, behavior:'smooth'});
+
+      setTimeout(function(){
+        resScreen.classList.remove('is-entering');
+      }, 900);
+    }, 1200);
   });
 }
 
