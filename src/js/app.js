@@ -294,8 +294,24 @@ function generate(form){
     if(isNaN(lat)) lat = loc.lat;
     if(isNaN(lng)) lng = loc.lng;
 
-    var tzOffset = -lng / 15;
-    var utHr = hr + mn / 60 + tzOffset;
+    // Regional Timezone Offset Resolution (IST = +05:30 -> -5.5 hours to UT)
+    var tzOffsetHours = 5.5;
+    var pLower = place.toLowerCase();
+    if (pLower.indexOf('london') >= 0 || pLower.indexOf('united kingdom') >= 0 || pLower.indexOf('uk') >= 0) {
+      tzOffsetHours = 0.0;
+    } else if (pLower.indexOf('new york') >= 0 || pLower.indexOf('chicago') >= 0 || pLower.indexOf('united states') >= 0 || pLower.indexOf('usa') >= 0) {
+      tzOffsetHours = -5.0;
+    } else if (pLower.indexOf('sydney') >= 0 || pLower.indexOf('australia') >= 0) {
+      tzOffsetHours = 10.0;
+    } else if (pLower.indexOf('dubai') >= 0 || pLower.indexOf('uae') >= 0) {
+      tzOffsetHours = 4.0;
+    } else if (pLower.indexOf('tokyo') >= 0 || pLower.indexOf('japan') >= 0) {
+      tzOffsetHours = 9.0;
+    } else if (form.tz !== undefined && !isNaN(parseFloat(form.tz))) {
+      tzOffsetHours = parseFloat(form.tz);
+    }
+
+    var utHr = hr + (mn / 60) - tzOffsetHours;
     var jd = toJD(year, month, day, utHr);
 
     var trop = planetLon(jd);

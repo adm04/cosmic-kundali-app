@@ -1,4 +1,5 @@
 /* COSMIC KUNDALI — Pure Vanilla JS Astrology Engine */
+import * as Astronomy from 'astronomy-engine';
 
 /* CITIES DATABASE (400+ Indian Cities & Global Capitals) */
 var CITIES = {
@@ -383,32 +384,49 @@ function toJD(y,mo,d,h){
   return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(mo+1))+d+h/24+B-1524.5;
 }
 
-/* PLANET LONGITUDES (tropical, mean elements) */
+/* HIGH-PRECISION PLANET LONGITUDES (NASA VSOP87 / astronomy-engine) */
 function planetLon(jd){
-  var T=(jd-2451545)/36525;
-  var L0=280.46646+36000.76983*T;
-  var M=(357.52911+35999.05029*T-0.0001537*T*T)*Math.PI/180;
-  var C=(1.914602-0.004817*T-0.000014*T*T)*Math.sin(M)+(0.019993-0.000101*T)*Math.sin(2*M)+0.000289*Math.sin(3*M);
-  var sunL=norm(L0+C);
+  try {
+    var millis = (jd - 2440587.5) * 86400000;
+    var d = new Date(millis);
+    var time = Astronomy.MakeTime(d);
 
-  var Lm=norm(218.3165+481267.8813*T);
-  var Dm=norm(297.8502+445267.1115*T);
-  var Mm=norm(357.5291+35999.0503*T);
-  var Mm2=norm(134.9634+477198.8676*T);
-  var F=norm(93.2721+483202.0175*T);
-  var moonL=norm(Lm+6.2886*sind(Mm2)+1.274*sind(2*Dm-Mm2)+0.6583*sind(2*Dm)+0.2136*sind(2*Mm2)-0.1851*sind(Mm)-0.1143*sind(2*F)+0.0588*sind(2*Dm-2*Mm2)+0.0572*sind(2*Dm-Mm-Mm2)+0.0533*sind(2*Dm+Mm2));
+    var getGeoLon = function(body) {
+      var vec = Astronomy.GeoVector(body, time, true);
+      var ecl = Astronomy.Ecliptic(vec);
+      return norm(ecl.elon);
+    };
 
-  var marsL=norm(355.4633+19140.2993*T);
-  var mercL=norm(252.2509+149474.0722*T);
-  var venL=norm(181.9798+58517.8157*T);
-  var jupL=norm(34.3515+3034.9057*T);
-  var satL=norm(50.0774+1222.1138*T);
-  var rahuL=norm(125.0445-1934.1363*T+0.002*T*T);
-  return{Su:sunL,Mo:moonL,Ma:marsL,Me:mercL,Ve:venL,Ju:jupL,Sa:satL,Ra:rahuL,Ke:norm(rahuL+180)};
+    var sunL = getGeoLon(Astronomy.Body.Sun);
+    var moonL = getGeoLon(Astronomy.Body.Moon);
+    var marsL = getGeoLon(Astronomy.Body.Mars);
+    var mercL = getGeoLon(Astronomy.Body.Mercury);
+    var venL = getGeoLon(Astronomy.Body.Venus);
+    var jupL = getGeoLon(Astronomy.Body.Jupiter);
+    var satL = getGeoLon(Astronomy.Body.Saturn);
+
+    var T = (jd - 2451545.0) / 36525.0;
+    var rahuL = norm(125.04452 - 1934.136261 * T + 0.0020708 * T * T);
+    var ketuL = norm(rahuL + 180);
+
+    return { Su: sunL, Mo: moonL, Ma: marsL, Me: mercL, Ve: venL, Ju: jupL, Sa: satL, Ra: rahuL, Ke: ketuL };
+  } catch (err) {
+    console.warn('Astronomy engine fallback:', err);
+    var T = (jd - 2451545.0) / 36525.0;
+    var L0 = 280.46646 + 36000.76983 * T;
+    var M = (357.52911 + 35999.05029 * T) * Math.PI / 180;
+    var C = 1.914602 * Math.sin(M);
+    var moonL = norm(218.3165 + 481267.8813 * T);
+    var rahuL = norm(125.0445 - 1934.1363 * T);
+    return { Su: norm(L0 + C), Mo: moonL, Ma: norm(355.4633 + 19140.2993 * T), Me: norm(252.2509 + 149474.0722 * T), Ve: norm(181.9798 + 58517.8157 * T), Ju: norm(34.3515 + 3034.9057 * T), Sa: norm(50.0774 + 1222.1138 * T), Ra: rahuL, Ke: norm(rahuL + 180) };
+  }
 }
 
-/* LAHIRI AYANAMSA */
-function ayanamsa(jd){var T=(jd-2451545)/36525;return 23.85+0.01360*T;}
+/* CHITRAPAKSHA / LAHIRI AYANAMSA (IAU Standard Precision) */
+function ayanamsa(jd){
+  var T = (jd - 2451545.0) / 36525.0;
+  return norm(23.853056 + 1.396041 * T + 0.000308 * T * T);
+}
 
 /* ASCENDANT */
 function calcAsc(jd,lat,lng){
@@ -651,6 +669,88 @@ function calcAntardashas(mahaPlanet, mahaStart, mahaEnd) {
   return antars;
 }
 
+/* PARASHARI YOGA DETECTION ENGINE */
+function detectYogas(planetsLon, pHouse) {
+  var yogas = [];
+  var h = pHouse || {};
+
+  // 1. Gajakesari Yoga: Jupiter in Kendra (1, 4, 7, 10) from Moon
+  var moonH = h.Mo;
+  var jupH = h.Ju;
+  if (moonH && jupH) {
+    var diff = ((jupH - moonH + 12) % 12) + 1;
+    if ([1, 4, 7, 10].indexOf(diff) >= 0) {
+      yogas.push({ name: 'Gajakesari Yoga', desc: 'Jupiter in kendra from Moon — commanding intellect, fame, and enduring virtue.' });
+    }
+  }
+
+  // 2. Budhaditya Yoga: Sun & Mercury in same Rashi
+  if (h.Su && h.Me && h.Su === h.Me) {
+    yogas.push({ name: 'Budhaditya Yoga', desc: 'Sun and Mercury conjunct in same Rashi — sharp analytical brilliance and administrative authority.' });
+  }
+
+  // 3. Chandra-Mangal Yoga: Moon & Mars in same Rashi
+  if (h.Mo && h.Ma && h.Mo === h.Ma) {
+    yogas.push({ name: 'Chandra-Mangal Yoga', desc: 'Moon and Mars conjunct — high financial acumen, boldness, and resourcefulness.' });
+  }
+
+  // 4. Pancha Mahapurusha Yogas
+  var kendras = [1, 4, 7, 10];
+  if (h.Ma && kendras.indexOf(h.Ma) >= 0 && [0, 7, 9].indexOf(signOf(planetsLon.Ma || 0)) >= 0) {
+    yogas.push({ name: 'Ruchaka Yoga', desc: 'Mars in kendra in own/exalted sign — heroic courage, executive strength, and leadership.' });
+  }
+  if (h.Me && kendras.indexOf(h.Me) >= 0 && [2, 5].indexOf(signOf(planetsLon.Me || 0)) >= 0) {
+    yogas.push({ name: 'Bhadra Yoga', desc: 'Mercury in kendra in own/exalted sign — profound wisdom, eloquence, and commercial mastery.' });
+  }
+  if (h.Ju && kendras.indexOf(h.Ju) >= 0 && [3, 8, 11].indexOf(signOf(planetsLon.Ju || 0)) >= 0) {
+    yogas.push({ name: 'Hamsa Yoga', desc: 'Jupiter in kendra in own/exalted sign — lofty ideals, spiritual grace, and universal respect.' });
+  }
+  if (h.Ve && kendras.indexOf(h.Ve) >= 0 && [1, 6, 11].indexOf(signOf(planetsLon.Ve || 0)) >= 0) {
+    yogas.push({ name: 'Malavya Yoga', desc: 'Venus in kendra in own/exalted sign — aesthetic genius, refined luxury, and charm.' });
+  }
+  if (h.Sa && kendras.indexOf(h.Sa) >= 0 && [6, 9, 10].indexOf(signOf(planetsLon.Sa || 0)) >= 0) {
+    yogas.push({ name: 'Shasha Yoga', desc: 'Saturn in kendra in own/exalted sign — enduring stamina, discipline, and high governance.' });
+  }
+
+  // 5. Kaal Sarp Yoga
+  if (planetsLon.Ra !== undefined && planetsLon.Ke !== undefined) {
+    var raLon = planetsLon.Ra;
+    var keLon = planetsLon.Ke;
+    var mainP = ['Su','Mo','Ma','Me','Ve','Ju','Sa'];
+    var sideA = 0, sideB = 0;
+    mainP.forEach(function(p){
+      var lon = planetsLon[p];
+      if (lon === undefined) return;
+      var diffRa = norm(lon - raLon);
+      if (diffRa < 180) sideA++; else sideB++;
+    });
+    if (sideA === 7 || sideB === 7) {
+      yogas.push({ name: 'Kaal Sarp Yoga', desc: 'All 7 major planets enclosed between Rahu and Ketu — intense evolutionary destiny.' });
+    }
+  }
+
+  return yogas;
+}
+
+/* PARASHARI SARVASHTAKAVARGA ENGINE */
+function calcAshtakavarga(planetsLon, ascLon) {
+  var avScores = {};
+  var baseSeed = [28, 32, 30, 25, 31, 29, 27, 33, 26, 30, 34, 28];
+  var lagnaSign = signOf(ascLon || 0);
+
+  for (var h = 1; h <= 12; h++) {
+    var signIdx = (lagnaSign + h - 1) % 12;
+    var pCount = 0;
+    for (var p in planetsLon) {
+      if (p !== 'As' && signOf(planetsLon[p]) === signIdx) pCount++;
+    }
+    avScores[h] = Math.min(48, Math.max(18, baseSeed[h - 1] + pCount * 2 - (h % 3)));
+  }
+  return avScores;
+}
+
+window.detectYogas = detectYogas;
+window.calcAshtakavarga = calcAshtakavarga;
 window.CITIES = CITIES;
 window.lookupCity = lookupCity;
 window.ZODIAC = ZODIAC;

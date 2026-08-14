@@ -267,6 +267,15 @@ function genOverview(d, mode){
   var horizonHtml = genHorizonTimeline(d);
 
   if (isSimple) {
+    var yogas = (window.detectYogas ? detectYogas(d.planetsLon, d.pHouse) : []);
+    var yogaCardHtml = '';
+    if (yogas.length > 0) {
+      var yItems = yogas.map(function(y) {
+        return '<li><strong>' + y.name + ':</strong> ' + y.desc + '</li>';
+      }).join('');
+      yogaCardHtml = '<div class="ck-card"><div class="ck-eyebrow">Auspicious Configurations</div><h3 class="ck-card-title">Parashari Planetary Yogas</h3><div class="ck-card-body"><ul style="line-height:1.7;">' + yItems + '</ul></div></div>';
+    }
+
     return '<div class="ck-hero-line">"Your chart combines your ' + ascSign + ' rising outer personality with your ' + moonSign + ' emotional core."</div>' +
       '<div class="ck-card"><div class="ck-eyebrow">Outer Self &mdash; Ascendant (Lagna)</div><h3 class="ck-card-title">' + ascSign + ' ' + ascDegStr + ' &middot; ' + ascNak + ' (Pada ' + ascPada + ')</h3><div class="ck-card-body">' +
       '<p><strong>What it means:</strong> Your core outward behavior is guided by <strong>' + ascSign + '</strong> energy (' + (SIGN_DESC[ascSign] || 'a unique presence') + '). You naturally approach new opportunities and people with this focus.</p>' +
@@ -285,6 +294,8 @@ function genOverview(d, mode){
       '<li>' + moonBullets[1] + '</li>' +
       '</ul></div>' +
       '</div></div>' +
+
+      yogaCardHtml +
 
       '<div class="ck-card ck-card-sage"><div class="ck-eyebrow">Chart Signature &mdash; Distinctive Alignment</div><h3 class="ck-card-title">What Makes Your Chart Unique</h3><div class="ck-card-body">' +
       '<p>' + signature.summary + '</p>' +
