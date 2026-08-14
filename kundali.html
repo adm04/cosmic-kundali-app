@@ -69,14 +69,11 @@
             </select>
           </div>
         </div>
-        <div class="form-group">
-          <label for="f-place" id="lbl-place">City of Birth</label>
-          <input type="text" id="f-place" placeholder="e.g. Kolkata, India" list="cities-list" required />
-          <datalist id="cities-list"></datalist>
-        </div>
-        <div class="form-group">
-          <label for="f-lat" id="lbl-lat">Latitude (optional)</label>
-          <input type="number" id="f-lat" placeholder="e.g. 22.5726" step="0.0001" min="-90" max="90" />
+        <div class="form-group full" style="position:relative;">
+          <label for="f-place" id="lbl-place">City of Birth (Search All Indian Cities & Global)</label>
+          <input type="text" id="f-place" placeholder="Type or search your city (e.g. Surat, Pune, Jaipur, Patna)..." autocomplete="off" required />
+          <div id="city-suggestions" class="ck-city-suggestions"></div>
+          <input type="hidden" id="f-lat" />
         </div>
       </div>
       <button type="submit" class="generate-btn" id="btn-generate">✦ Cast My Kundali ✦</button>

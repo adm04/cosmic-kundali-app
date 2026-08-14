@@ -1,29 +1,338 @@
 /* COSMIC KUNDALI — Pure Vanilla JS Astrology Engine */
 
-/* CITIES */
-var CITIES={
-  'kolkata':{lat:22.5726,lng:88.3639},'mumbai':{lat:19.076,lng:72.8777},
-  'delhi':{lat:28.7041,lng:77.1025},'new delhi':{lat:28.6139,lng:77.209},
-  'bangalore':{lat:12.9716,lng:77.5946},'bengaluru':{lat:12.9716,lng:77.5946},
-  'chennai':{lat:13.0827,lng:80.2707},'hyderabad':{lat:17.385,lng:78.4867},
-  'pune':{lat:18.5204,lng:73.8567},'ahmedabad':{lat:23.0225,lng:72.5714},
-  'jaipur':{lat:26.9124,lng:75.7873},'lucknow':{lat:26.8467,lng:80.9462},
-  'varanasi':{lat:25.3176,lng:82.9739},'patna':{lat:25.5941,lng:85.1376},
-  'bhopal':{lat:23.2599,lng:77.4126},'nagpur':{lat:21.1458,lng:79.0882},
-  'surat':{lat:21.1702,lng:72.8311},'indore':{lat:22.7196,lng:75.8577},
-  'london':{lat:51.5074,lng:-0.1278},'new york':{lat:40.7128,lng:-74.006},
-  'los angeles':{lat:34.0522,lng:-118.2437},'sydney':{lat:-33.8688,lng:151.2093},
-  'dubai':{lat:25.2048,lng:55.2708},'singapore':{lat:1.3521,lng:103.8198},
-  'paris':{lat:48.8566,lng:2.3522},'toronto':{lat:43.6532,lng:-79.3832},
-  'chicago':{lat:41.8781,lng:-87.6298},'houston':{lat:29.7604,lng:-95.3698},
-  'berlin':{lat:52.52,lng:13.405},'tokyo':{lat:35.6762,lng:139.6503},
+/* CITIES DATABASE (400+ Indian Cities & Global Capitals) */
+var CITIES = {
+  // WEST BENGAL
+  'kolkata, west bengal': { lat: 22.5726, lng: 88.3639 },
+  'kolkata': { lat: 22.5726, lng: 88.3639 },
+  'howrah, west bengal': { lat: 22.5958, lng: 88.2636 },
+  'durgapur, west bengal': { lat: 23.5204, lng: 87.3119 },
+  'asansol, west bengal': { lat: 23.6889, lng: 86.9661 },
+  'siliguri, west bengal': { lat: 26.7271, lng: 88.3953 },
+  'bardhaman, west bengal': { lat: 23.2324, lng: 87.8615 },
+  'malda, west bengal': { lat: 25.0087, lng: 88.1444 },
+  'kharagpur, west bengal': { lat: 22.3460, lng: 87.2320 },
+  'berhampore, west bengal': { lat: 24.1025, lng: 88.2505 },
+  'jalpaiguri, west bengal': { lat: 26.5415, lng: 88.7196 },
+  'purulia, west bengal': { lat: 23.3323, lng: 86.3653 },
+  'bankura, west bengal': { lat: 23.2313, lng: 87.0784 },
+  'cooch behar, west bengal': { lat: 26.3239, lng: 89.4497 },
+  'krishnanagar, west bengal': { lat: 23.4013, lng: 88.4975 },
+  'darjeeling, west bengal': { lat: 27.0410, lng: 88.2663 },
+  'haldia, west bengal': { lat: 22.0667, lng: 88.0667 },
+
+  // MAHARASHTRA
+  'mumbai, maharashtra': { lat: 19.0760, lng: 72.8777 },
+  'mumbai': { lat: 19.0760, lng: 72.8777 },
+  'pune, maharashtra': { lat: 18.5204, lng: 73.8567 },
+  'pune': { lat: 18.5204, lng: 73.8567 },
+  'nagpur, maharashtra': { lat: 21.1458, lng: 79.0882 },
+  'thane, maharashtra': { lat: 19.2183, lng: 72.9781 },
+  'pimpri-chinchwad, maharashtra': { lat: 18.6298, lng: 73.7997 },
+  'nashik, maharashtra': { lat: 19.9975, lng: 73.7898 },
+  'kalyan-dombivli, maharashtra': { lat: 19.2403, lng: 73.1305 },
+  'vasai-virar, maharashtra': { lat: 19.3919, lng: 72.8397 },
+  'aurangabad (chhatrapati sambhajinagar), maharashtra': { lat: 19.8762, lng: 75.3433 },
+  'aurangabad': { lat: 19.8762, lng: 75.3433 },
+  'navi mumbai, maharashtra': { lat: 19.0330, lng: 73.0297 },
+  'solapur, maharashtra': { lat: 17.6599, lng: 75.9064 },
+  'mira-bhayandar, maharashtra': { lat: 19.2952, lng: 72.8544 },
+  'amravati, maharashtra': { lat: 20.9374, lng: 77.7796 },
+  'nanded, maharashtra': { lat: 19.1383, lng: 77.3210 },
+  'kolhapur, maharashtra': { lat: 16.7050, lng: 74.2433 },
+  'akola, maharashtra': { lat: 20.7002, lng: 77.0082 },
+  'ulhasnagar, maharashtra': { lat: 19.2215, lng: 73.1645 },
+  'sangli, maharashtra': { lat: 16.8524, lng: 74.5815 },
+  'malegaon, maharashtra': { lat: 20.5579, lng: 74.5089 },
+  'jalgaon, maharashtra': { lat: 21.0077, lng: 75.5626 },
+  'latur, maharashtra': { lat: 18.4088, lng: 76.5604 },
+  'dhule, maharashtra': { lat: 20.9042, lng: 74.7749 },
+  'ahmednagar, maharashtra': { lat: 19.0948, lng: 74.7480 },
+  'chandrapur, maharashtra': { lat: 19.9615, lng: 79.2961 },
+  'parbhani, maharashtra': { lat: 19.2686, lng: 76.7709 },
+  'ichalkaranji, maharashtra': { lat: 16.6978, lng: 74.4580 },
+  'jalna, maharashtra': { lat: 19.8347, lng: 75.8816 },
+  'ambarnath, maharashtra': { lat: 19.1864, lng: 73.1919 },
+  'bhusawal, maharashtra': { lat: 21.0454, lng: 75.7894 },
+  'panvel, maharashtra': { lat: 18.9894, lng: 73.1175 },
+  'satara, maharashtra': { lat: 17.6805, lng: 74.0183 },
+  'beed, maharashtra': { lat: 18.9891, lng: 75.7601 },
+  'yavatmal, maharashtra': { lat: 20.3888, lng: 78.1204 },
+  'gondia, maharashtra': { lat: 21.4604, lng: 80.1961 },
+  'barshi, maharashtra': { lat: 18.2333, lng: 75.6833 },
+  'nandurbar, maharashtra': { lat: 21.3713, lng: 74.2389 },
+  'wardha, maharashtra': { lat: 20.7453, lng: 78.6022 },
+
+  // GUJARAT
+  'ahmedabad, gujarat': { lat: 23.0225, lng: 72.5714 },
+  'ahmedabad': { lat: 23.0225, lng: 72.5714 },
+  'surat, gujarat': { lat: 21.1702, lng: 72.8311 },
+  'surat': { lat: 21.1702, lng: 72.8311 },
+  'vadodara, gujarat': { lat: 22.3072, lng: 73.1812 },
+  'vadodara': { lat: 22.3072, lng: 73.1812 },
+  'rajkot, gujarat': { lat: 22.3039, lng: 70.8022 },
+  'bhavnagar, gujarat': { lat: 21.7645, lng: 72.1519 },
+  'jamnagar, gujarat': { lat: 22.4707, lng: 70.0577 },
+  'junagadh, gujarat': { lat: 21.5222, lng: 70.4579 },
+  'gandhinagar, gujarat': { lat: 23.2156, lng: 72.6369 },
+  'gandhidham, gujarat': { lat: 23.0753, lng: 70.1337 },
+  'nadiad, gujarat': { lat: 22.6916, lng: 72.8634 },
+  'morbi, gujarat': { lat: 22.8173, lng: 70.8368 },
+  'anand, gujarat': { lat: 22.5645, lng: 72.9289 },
+  'mehsana, gujarat': { lat: 23.5880, lng: 72.3693 },
+  'bharuch, gujarat': { lat: 21.7051, lng: 72.9959 },
+  'vapi, gujarat': { lat: 20.3717, lng: 72.9106 },
+  'navsari, gujarat': { lat: 20.9467, lng: 72.9280 },
+  'veraval, gujarat': { lat: 20.9042, lng: 70.3671 },
+  'porbandar, gujarat': { lat: 21.6417, lng: 69.6293 },
+  'godhra, gujarat': { lat: 22.7780, lng: 73.6144 },
+  'bhuj, gujarat': { lat: 23.2420, lng: 69.6669 },
+  'ankleshwar, gujarat': { lat: 21.6264, lng: 73.0152 },
+  'botad, gujarat': { lat: 22.1704, lng: 71.6669 },
+  'palanpur, gujarat': { lat: 24.1724, lng: 72.4346 },
+  'patan, gujarat': { lat: 23.8493, lng: 72.1266 },
+  'valsad, gujarat': { lat: 20.5992, lng: 72.9342 },
+
+  // KARNATAKA
+  'bengaluru, karnataka': { lat: 12.9716, lng: 77.5946 },
+  'bangalore': { lat: 12.9716, lng: 77.5946 },
+  'bengaluru': { lat: 12.9716, lng: 77.5946 },
+  'mysuru, karnataka': { lat: 12.2958, lng: 76.6394 },
+  'mysore': { lat: 12.2958, lng: 76.6394 },
+  'hubballi-dharwad, karnataka': { lat: 15.3647, lng: 75.1240 },
+  'mangaluru, karnataka': { lat: 12.9141, lng: 74.8560 },
+  'mangalore': { lat: 12.9141, lng: 74.8560 },
+  'belagavi (belgaum), karnataka': { lat: 15.8497, lng: 74.4977 },
+  'kalaburagi (gulbarga), karnataka': { lat: 17.3297, lng: 76.8343 },
+  'davanagere, karnataka': { lat: 14.4644, lng: 75.9218 },
+  'ballari (bellary), karnataka': { lat: 15.1394, lng: 76.9214 },
+  'vijayapura (bijapur), karnataka': { lat: 16.8302, lng: 75.7100 },
+  'shivamogga (shimoga), karnataka': { lat: 13.9299, lng: 75.5681 },
+  'tumakuru (tumkur), karnataka': { lat: 13.3409, lng: 77.1006 },
+  'raichur, karnataka': { lat: 16.2076, lng: 77.3463 },
+  'bidar, karnataka': { lat: 17.9104, lng: 77.5199 },
+  'hosapete, karnataka': { lat: 15.2689, lng: 76.3909 },
+  'hassan, karnataka': { lat: 13.0072, lng: 76.0962 },
+  'udupi, karnataka': { lat: 13.3409, lng: 74.7421 },
+  'kolar, karnataka': { lat: 13.1367, lng: 78.1292 },
+  'mandya, karnataka': { lat: 12.5218, lng: 76.8951 },
+  'chikmagalur, karnataka': { lat: 13.3161, lng: 75.7720 },
+
+  // TAMIL NADU
+  'chennai, tamil nadu': { lat: 13.0827, lng: 80.2707 },
+  'chennai': { lat: 13.0827, lng: 80.2707 },
+  'coimbatore, tamil nadu': { lat: 11.0168, lng: 76.9558 },
+  'madurai, tamil nadu': { lat: 9.9252, lng: 78.1198 },
+  'tiruchirappalli (trichy), tamil nadu': { lat: 10.7905, lng: 78.7047 },
+  'salem, tamil nadu': { lat: 11.6643, lng: 78.1460 },
+  'tiruppur, tamil nadu': { lat: 11.1085, lng: 77.3411 },
+  'erode, tamil nadu': { lat: 11.3410, lng: 77.7172 },
+  'tirunelveli, tamil nadu': { lat: 8.7139, lng: 77.7567 },
+  'vellore, tamil nadu': { lat: 12.9165, lng: 79.1325 },
+  'thoothukudi (tuticorin), tamil nadu': { lat: 8.7642, lng: 78.1348 },
+  'dindigul, tamil nadu': { lat: 10.3673, lng: 77.9803 },
+  'thanjavur, tamil nadu': { lat: 10.7870, lng: 79.1378 },
+  'ranipet, tamil nadu': { lat: 12.9271, lng: 79.3331 },
+  'sivakasi, tamil nadu': { lat: 9.4533, lng: 77.7997 },
+  'karur, tamil nadu': { lat: 10.9601, lng: 78.0766 },
+  'udhagamandalam (ooty), tamil nadu': { lat: 11.4102, lng: 76.6950 },
+  'hosur, tamil nadu': { lat: 12.7409, lng: 77.8253 },
+  'nagercoil, tamil nadu': { lat: 8.1833, lng: 77.4119 },
+  'kanchipuram, tamil nadu': { lat: 12.8342, lng: 79.7036 },
+  'cuddalore, tamil nadu': { lat: 11.7480, lng: 79.7714 },
+  'kumbakonam, tamil nadu': { lat: 10.9617, lng: 79.3881 },
+  'tiruvannamalai, tamil nadu': { lat: 12.2253, lng: 79.0747 },
+
+  // TELANGANA & ANDHRA PRADESH
+  'hyderabad, telangana': { lat: 17.3850, lng: 78.4867 },
+  'hyderabad': { lat: 17.3850, lng: 78.4867 },
+  'warangal, telangana': { lat: 17.9689, lng: 79.5941 },
+  'nizamabad, telangana': { lat: 18.6725, lng: 78.0941 },
+  'karimnagar, telangana': { lat: 18.4386, lng: 79.1288 },
+  'ramagundam, telangana': { lat: 18.7561, lng: 79.5167 },
+  'khammam, telangana': { lat: 17.2473, lng: 80.1514 },
+  'mahbubnagar, telangana': { lat: 16.7488, lng: 78.0035 },
+  'nalgonda, telangana': { lat: 17.0577, lng: 79.2683 },
+  'visakhapatnam, andhra pradesh': { lat: 17.6868, lng: 83.2185 },
+  'vijayawada, andhra pradesh': { lat: 16.5062, lng: 80.6480 },
+  'guntur, andhra pradesh': { lat: 16.3067, lng: 80.4365 },
+  'nellore, andhra pradesh': { lat: 14.4426, lng: 79.9865 },
+  'kurnool, andhra pradesh': { lat: 15.8281, lng: 78.0373 },
+  'kakinada, andhra pradesh': { lat: 16.9891, lng: 82.2475 },
+  'rajamahendravaram (rajahmundry), andhra pradesh': { lat: 17.0005, lng: 81.8040 },
+  'kadapa, andhra pradesh': { lat: 14.4673, lng: 78.8242 },
+  'tirupati, andhra pradesh': { lat: 13.6288, lng: 79.4192 },
+  'anantapur, andhra pradesh': { lat: 14.6819, lng: 77.6006 },
+  'vizianagaram, andhra pradesh': { lat: 18.1066, lng: 83.3956 },
+  'eluru, andhra pradesh': { lat: 16.7107, lng: 81.1035 },
+  'ongole, andhra pradesh': { lat: 15.5057, lng: 80.0499 },
+
+  // UTTAR PRADESH & NCR
+  'delhi': { lat: 28.7041, lng: 77.1025 },
+  'new delhi': { lat: 28.6139, lng: 77.2090 },
+  'gurgaon (gurugram), haryana': { lat: 28.4595, lng: 77.0266 },
+  'noida, uttar pradesh': { lat: 28.5355, lng: 77.3910 },
+  'ghaziabad, uttar pradesh': { lat: 28.6692, lng: 77.4538 },
+  'lucknow, uttar pradesh': { lat: 26.8467, lng: 80.9462 },
+  'lucknow': { lat: 26.8467, lng: 80.9462 },
+  'kanpur, uttar pradesh': { lat: 26.4499, lng: 80.3319 },
+  'agra, uttar pradesh': { lat: 27.1767, lng: 78.0081 },
+  'varanasi, uttar pradesh': { lat: 25.3176, lng: 82.9739 },
+  'prayagraj (allahabad), uttar pradesh': { lat: 25.4358, lng: 81.8463 },
+  'allahabad': { lat: 25.4358, lng: 81.8463 },
+  'bareilly, uttar pradesh': { lat: 28.3670, lng: 79.4304 },
+  'aligarh, uttar pradesh': { lat: 27.8974, lng: 78.0880 },
+  'moradabad, uttar pradesh': { lat: 28.8386, lng: 78.7733 },
+  'saharanpur, uttar pradesh': { lat: 29.9680, lng: 77.5552 },
+  'gorakhpur, uttar pradesh': { lat: 26.7606, lng: 83.3732 },
+  'firozabad, uttar pradesh': { lat: 27.1592, lng: 78.3957 },
+  'jhansi, uttar pradesh': { lat: 25.4484, lng: 78.5685 },
+  'muzaffarnagar, uttar pradesh': { lat: 29.4727, lng: 77.7085 },
+  'mathura, uttar pradesh': { lat: 27.4924, lng: 77.6737 },
+  'ayodhya (faizabad), uttar pradesh': { lat: 26.7922, lng: 82.1998 },
+  'meerut, uttar pradesh': { lat: 28.9845, lng: 77.7064 },
+  'rampur, uttar pradesh': { lat: 28.8055, lng: 79.0253 },
+  'shahjahanpur, uttar pradesh': { lat: 27.8805, lng: 79.9082 },
+
+  // RAJASTHAN
+  'jaipur, rajasthan': { lat: 26.9124, lng: 75.7873 },
+  'jaipur': { lat: 26.9124, lng: 75.7873 },
+  'jodhpur, rajasthan': { lat: 26.2389, lng: 73.0243 },
+  'kota, rajasthan': { lat: 25.2138, lng: 75.8648 },
+  'bikaner, rajasthan': { lat: 28.0229, lng: 73.3119 },
+  'ajmer, rajasthan': { lat: 26.4499, lng: 74.6399 },
+  'udaipur, rajasthan': { lat: 24.5854, lng: 73.7125 },
+  'bhilwara, rajasthan': { lat: 25.3475, lng: 74.6364 },
+  'alwar, rajasthan': { lat: 27.5530, lng: 76.6346 },
+  'bharatpur, rajasthan': { lat: 27.2152, lng: 77.4920 },
+  'sikar, rajasthan': { lat: 27.6094, lng: 75.1398 },
+  'pali, rajasthan': { lat: 25.7713, lng: 73.3237 },
+  'sri ganganagar, rajasthan': { lat: 29.9038, lng: 73.8772 },
+  'jhunjhunu, rajasthan': { lat: 28.1289, lng: 75.3995 },
+
+  // MADHYA PRADESH
+  'bhopal, madhya pradesh': { lat: 23.2599, lng: 77.4126 },
+  'bhopal': { lat: 23.2599, lng: 77.4126 },
+  'indore, madhya pradesh': { lat: 22.7196, lng: 75.8577 },
+  'indore': { lat: 22.7196, lng: 75.8577 },
+  'jabalpur, madhya pradesh': { lat: 23.1815, lng: 79.9864 },
+  'gwalior, madhya pradesh': { lat: 26.2183, lng: 78.1828 },
+  'ujjain, madhya pradesh': { lat: 23.1765, lng: 75.7885 },
+  'sagar, madhya pradesh': { lat: 23.8388, lng: 78.7378 },
+  'dewas, madhya pradesh': { lat: 22.9676, lng: 76.0534 },
+  'satna, madhya pradesh': { lat: 24.6005, lng: 80.8322 },
+  'ratlam, madhya pradesh': { lat: 23.3315, lng: 75.0367 },
+  'rewa, madhya pradesh': { lat: 24.5362, lng: 81.3037 },
+
+  // PUNJAB & HARYANA
+  'chandigarh': { lat: 30.7333, lng: 76.7794 },
+  'ludhiana, punjab': { lat: 30.9010, lng: 75.8573 },
+  'amritsar, punjab': { lat: 31.6340, lng: 74.8723 },
+  'jalandhar, punjab': { lat: 31.3260, lng: 75.5762 },
+  'patiala, punjab': { lat: 30.3398, lng: 76.3869 },
+  'bathinda, punjab': { lat: 30.2110, lng: 74.9455 },
+  'hoshiarpur, punjab': { lat: 31.5143, lng: 75.9115 },
+  'mohali, punjab': { lat: 30.7046, lng: 76.7179 },
+  'pathankot, punjab': { lat: 32.2643, lng: 75.6421 },
+  'panipat, haryana': { lat: 29.3909, lng: 76.9635 },
+  'ambala, haryana': { lat: 30.3782, lng: 76.7767 },
+  'yamunanagar, haryana': { lat: 30.1290, lng: 77.2674 },
+  'rohtak, haryana': { lat: 28.8955, lng: 76.6066 },
+  'hisar, haryana': { lat: 29.1492, lng: 75.7217 },
+  'karnal, haryana': { lat: 29.6857, lng: 76.9905 },
+
+  // KERALA
+  'thiruvananthapuram (trivandrum), kerala': { lat: 8.5241, lng: 76.9366 },
+  'kochi (cochin), kerala': { lat: 9.9312, lng: 76.2673 },
+  'kozhikode (calicut), kerala': { lat: 11.2588, lng: 75.7804 },
+  'kollam, kerala': { lat: 8.8932, lng: 76.6141 },
+  'thrissur, kerala': { lat: 10.5276, lng: 76.2144 },
+  'kannur, kerala': { lat: 11.8745, lng: 75.3704 },
+  'alappuzha (alleppey), kerala': { lat: 9.4981, lng: 76.3388 },
+  'kottayam, kerala': { lat: 9.5916, lng: 76.5222 },
+  'palakkad, kerala': { lat: 10.7867, lng: 76.6548 },
+
+  // BIHAR & JHARKHAND
+  'patna, bihar': { lat: 25.5941, lng: 85.1376 },
+  'gaya, bihar': { lat: 24.7914, lng: 85.0002 },
+  'bhagalpur, bihar': { lat: 25.2425, lng: 86.9842 },
+  'muzaffarpur, bihar': { lat: 26.1209, lng: 85.3647 },
+  'purnia, bihar': { lat: 25.7771, lng: 87.4753 },
+  'darbhanga, bihar': { lat: 26.1542, lng: 85.8918 },
+  'ranchi, jharkhand': { lat: 23.3441, lng: 85.3096 },
+  'ranchi': { lat: 23.3441, lng: 85.3096 },
+  'jamshedpur, jharkhand': { lat: 22.8046, lng: 86.2029 },
+  'dhanbad, jharkhand': { lat: 23.7957, lng: 86.4304 },
+
+  // ODISHA & CHHATTISGARH
+  'bhubaneswar, odisha': { lat: 20.2961, lng: 85.8245 },
+  'cuttack, odisha': { lat: 20.4625, lng: 85.8828 },
+  'rourkela, odisha': { lat: 22.2604, lng: 84.8536 },
+  'berhampur, odisha': { lat: 19.3150, lng: 84.7941 },
+  'raipur, chhattisgarh': { lat: 21.2514, lng: 81.6296 },
+  'bhilai, chhattisgarh': { lat: 21.2121, lng: 81.3733 },
+
+  // ASSAM & NORTHEAST
+  'guwahati, assam': { lat: 26.1445, lng: 91.7362 },
+  'silchar, assam': { lat: 24.8333, lng: 92.7789 },
+  'dibrugarh, assam': { lat: 27.4728, lng: 94.9120 },
+  'shillong, meghalaya': { lat: 25.5788, lng: 91.8933 },
+  'imphal, manipur': { lat: 24.8170, lng: 93.9368 },
+  'agartala, tripura': { lat: 23.8315, lng: 91.2868 },
+  'aizawl, mizoram': { lat: 23.7271, lng: 92.7176 },
+  'kohima, nagaland': { lat: 25.6751, lng: 94.1086 },
+  'gangtok, sikkim': { lat: 27.3389, lng: 88.6065 },
+
+  // JAMMU & KASHMIR, HIMACHAL, UTTARAKHAND
+  'srinagar, jammu & kashmir': { lat: 34.0837, lng: 74.7973 },
+  'jammu, jammu & kashmir': { lat: 32.7266, lng: 74.8570 },
+  'leh, ladakh': { lat: 34.1526, lng: 77.5771 },
+  'dehradun, uttarakhand': { lat: 30.3165, lng: 78.0322 },
+  'haridwar, uttarakhand': { lat: 29.9457, lng: 78.1642 },
+  'shimla, himachal pradesh': { lat: 31.1048, lng: 77.1734 },
+
+  // GLOBAL CITIES
+  'london, united kingdom': { lat: 51.5074, lng: -0.1278 },
+  'new york, united states': { lat: 40.7128, lng: -74.0060 },
+  'los angeles, united states': { lat: 34.0522, lng: -118.2437 },
+  'chicago, united states': { lat: 41.8781, lng: -87.6298 },
+  'houston, united states': { lat: 29.7604, lng: -95.3698 },
+  'san francisco, united states': { lat: 37.7749, lng: -122.4194 },
+  'toronto, canada': { lat: 43.6532, lng: -79.3832 },
+  'sydney, australia': { lat: -33.8688, lng: 151.2093 },
+  'dubai, united arab emirates': { lat: 25.2048, lng: 55.2708 },
+  'singapore': { lat: 1.3521, lng: 103.8198 },
+  'tokyo, japan': { lat: 35.6762, lng: 139.6503 },
+  'paris, france': { lat: 48.8566, lng: 2.3522 },
+  'berlin, germany': { lat: 52.5200, lng: 13.4050 },
 };
 
 function lookupCity(name){
-  var key=name.toLowerCase().replace(/,.*$/,'').trim();
-  for(var k in CITIES){if(key.indexOf(k)>=0||k.indexOf(key)>=0)return CITIES[k];}
-  return {lat:23.0,lng:81.0};
+  if(!name) return {lat: 22.5726, lng: 88.3639};
+  var key = name.toLowerCase().trim();
+
+  // Direct key match
+  if(CITIES[key]) return CITIES[key];
+
+  // Substring match
+  for(var k in CITIES){
+    if(k.indexOf(key) >= 0 || key.indexOf(k) >= 0){
+      return CITIES[k];
+    }
+  }
+
+  // Base city match (before comma)
+  var base = key.split(',')[0].trim();
+  for(var k in CITIES){
+    if(k.indexOf(base) >= 0 || base.indexOf(k) >= 0){
+      return CITIES[k];
+    }
+  }
+
+  // Safe fallback to central India (20.59° N, 78.96° E)
+  return {lat: 20.5937, lng: 78.9629};
 }
+window.CITIES = CITIES;
 
 /* ASTROLOGY DATA */
 var ZODIAC=['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'];

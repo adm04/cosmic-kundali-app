@@ -14,16 +14,108 @@ import html2pdf from 'html2pdf.js';
   }
 })();
 
-/* POPULATE DATALIST FOR CITIES */
+/* INTERACTIVE CITY SEARCH AUTOCOMPLETE */
 (function(){
-  var dl=document.getElementById('cities-list');
-  if(!dl) return;
-  for(var k in CITIES){
-    var opt=document.createElement('option');
-    var cap=k.replace(/\b\w/g,function(l){return l.toUpperCase();});
-    opt.value=cap;
-    dl.appendChild(opt);
+  var input = document.getElementById('f-place');
+  var suggestions = document.getElementById('city-suggestions');
+  var latInput = document.getElementById('f-lat');
+  if(!input || !suggestions) return;
+
+  var currentFocus = -1;
+
+  function capitalize(str) {
+    return str.replace(/\b\w/g, function(l){ return l.toUpperCase(); });
   }
+
+  function getCityList() {
+    var keys = [];
+    var seen = {};
+    var cityMap = (typeof CITIES !== 'undefined' ? CITIES : (window.CITIES || {}));
+    for (var k in cityMap) {
+      var display = capitalize(k);
+      if (!seen[display]) {
+        seen[display] = true;
+        keys.push({ raw: k, display: display, data: cityMap[k] });
+      }
+    }
+    return keys;
+  }
+
+  input.addEventListener('input', function() {
+    var val = this.value.trim().toLowerCase();
+    suggestions.innerHTML = '';
+    currentFocus = -1;
+    if (!val) {
+      suggestions.classList.remove('show');
+      return;
+    }
+
+    var allCities = getCityList();
+    var matches = allCities.filter(function(item) {
+      return item.raw.indexOf(val) >= 0;
+    }).slice(0, 12);
+
+    if (matches.length === 0) {
+      suggestions.classList.remove('show');
+      return;
+    }
+
+    matches.forEach(function(item, idx) {
+      var div = document.createElement('div');
+      div.className = 'ck-city-item';
+      div.dataset.index = idx;
+
+      var nameParts = item.display.split(',');
+      var cityName = nameParts[0].trim();
+      var stateName = nameParts.slice(1).join(',').trim() || 'India';
+
+      div.innerHTML = '<span class="ck-city-name">' + cityName + '</span><span class="ck-city-badge">' + stateName + '</span>';
+
+      div.addEventListener('click', function() {
+        input.value = item.display;
+        if(latInput && item.data) latInput.value = item.data.lat;
+        suggestions.classList.remove('show');
+      });
+
+      suggestions.appendChild(div);
+    });
+
+    suggestions.classList.add('show');
+  });
+
+  input.addEventListener('keydown', function(e) {
+    var items = suggestions.querySelectorAll('.ck-city-item');
+    if (!items.length) return;
+
+    if (e.keyCode === 40) { // DOWN
+      currentFocus++;
+      if (currentFocus >= items.length) currentFocus = 0;
+      setActive(items);
+    } else if (e.keyCode === 38) { // UP
+      currentFocus--;
+      if (currentFocus < 0) currentFocus = items.length - 1;
+      setActive(items);
+    } else if (e.keyCode === 13) { // ENTER
+      if (currentFocus > -1 && items[currentFocus]) {
+        e.preventDefault();
+        items[currentFocus].click();
+      }
+    }
+  });
+
+  function setActive(items) {
+    items.forEach(function(el){ el.classList.remove('active'); });
+    if (items[currentFocus]) {
+      items[currentFocus].classList.add('active');
+      items[currentFocus].scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  document.addEventListener('click', function(e) {
+    if (e.target !== input && !suggestions.contains(e.target)) {
+      suggestions.classList.remove('show');
+    }
+  });
 })();
 
 /* TIME OF BIRTH AUTO-ADVANCE & FORMATTING */
