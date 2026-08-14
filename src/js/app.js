@@ -92,6 +92,16 @@ import html2pdf from 'html2pdf.js';
     document.body.classList.add('city-dropdown-open');
   }
 
+  input.addEventListener('focus', function() {
+    var val = this.value.trim().toLowerCase();
+    if (val && val.length >= 2) {
+      var localMatches = getLocalMatches(val);
+      if (localMatches && localMatches.length > 0) {
+        renderItems(localMatches);
+      }
+    }
+  });
+
   input.addEventListener('input', function() {
     var val = this.value.trim().toLowerCase();
     if (apiTimer) clearTimeout(apiTimer);
