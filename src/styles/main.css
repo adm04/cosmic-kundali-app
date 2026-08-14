@@ -218,6 +218,71 @@ input::placeholder { color:rgba(169,155,203,0.5); }
 option { background:#1c1436; color:var(--parchment); }
 input[type="date"]::-webkit-calendar-picker-indicator { filter:invert(0.7) sepia(1) hue-rotate(10deg); cursor:pointer; }
 
+/* DATE OF BIRTH INPUT STYLING (48px Height & Cosmic Gold Theme) */
+input[type="date"]#f-dob, .ck-date-input {
+  height: 48px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--parchment);
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 16px;
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  color-scheme: dark;
+}
+
+input[type="date"]#f-dob:focus, .ck-date-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201, 162, 75, 0.25);
+  background: rgba(28, 20, 54, 0.95);
+}
+
+input[type="date"]#f-dob::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  padding: 4px;
+  margin-right: -4px;
+  filter: invert(0.8) sepia(1) saturate(5) hue-rotate(15deg);
+  opacity: 0.85;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+input[type="date"]#f-dob::-webkit-calendar-picker-indicator:hover {
+  transform: scale(1.15);
+  opacity: 1;
+}
+
+input[type="date"]#f-dob::-webkit-datetime-edit {
+  color: var(--parchment);
+}
+
+input[type="date"]#f-dob::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+
+input[type="date"]#f-dob::-webkit-datetime-edit-text {
+  color: var(--gold-bright);
+  padding: 0 3px;
+  font-weight: 600;
+}
+
+input[type="date"]#f-dob::-webkit-datetime-edit-month-field,
+input[type="date"]#f-dob::-webkit-datetime-edit-day-field,
+input[type="date"]#f-dob::-webkit-datetime-edit-year-field {
+  color: var(--parchment);
+  font-weight: 500;
+}
+
+input[type="date"]#f-dob::-webkit-datetime-edit-month-field:focus,
+input[type="date"]#f-dob::-webkit-datetime-edit-day-field:focus,
+input[type="date"]#f-dob::-webkit-datetime-edit-year-field:focus {
+  background: rgba(201, 162, 75, 0.25);
+  color: var(--gold-bright);
+  border-radius: 4px;
+}
+
 /* TIME OF BIRTH REDESIGN (48px Height & No Spinner Arrows) */
 .ck-time-group { display:flex; gap:8px; align-items:center; width:100%; }
 .ck-time-input {
