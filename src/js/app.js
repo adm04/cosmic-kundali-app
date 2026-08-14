@@ -66,79 +66,141 @@
 })();
 
 /* MAIN GENERATE FORM HANDLER */
-function generate(form){
-  var name=form.name, gender=form.gender, dob=form.dob, tob=form.tob, place=form.place, userLat=form.lat;
-  var parts=dob.split('-'); var year=+parts[0],month=+parts[1],day=+parts[2];
-  var hr = (form.hr !== undefined) ? form.hr : (+tob.split(':')[0]);
-  var mn = (form.mn !== undefined) ? form.mn : (+tob.split(':')[1]);
-  var dobDate=new Date(year,month-1,day);
-
-  var loc=lookupCity(place);
-  var lat=userLat?parseFloat(userLat):loc.lat;
-  var lng=loc.lng;
-
-  var tzOffset=-lng/15;
-  var utHr=hr+mn/60+tzOffset;
-  var jd=toJD(year,month,day,utHr);
-
-  var trop=planetLon(jd);
-  var ay=ayanamsa(jd);
-  var planetsLon={};
-  for(var p in trop) planetsLon[p]=norm(trop[p]-ay);
-
-  var ascTrop=calcAsc(jd,lat,lng);
-  planetsLon['As']=norm(ascTrop-ay);
-
-  var lagnaIdx=signOf(planetsLon['As']);
-  var moonIdx=signOf(planetsLon['Mo']);
-  var sunIdx=signOf(planetsLon['Su']);
-  var lagnaSign=ZODIAC[lagnaIdx];
-  var moonSign=ZODIAC[moonIdx];
-  var sunSign=ZODIAC[sunIdx];
-  var lagnaRuler=RULERS[lagnaIdx];
-  var moonNakIdx=nakOf(planetsLon['Mo']);
-  var moonNak=NAKSHATRA[moonNakIdx];
-  var lagnaNakIdx=nakOf(planetsLon['As']);
-  var lagnaNak=NAKSHATRA[lagnaNakIdx];
-
-  var houses=buildHouses(planetsLon['As'],planetsLon);
-  var hSigns=houses.hSigns; var pHouse=houses.pHouse;
-
-  var dashas=calcDasha(planetsLon['Mo'],dobDate);
-  var cd=currentDasha(dashas); var nd=nextDasha(dashas);
-
-  var cAntar = null;
-  if(cd){
-    var antars = calcAntardashas(cd.planet, cd.start, cd.end);
-    var now = new Date();
-    cAntar = antars.find(function(a){ return a.start <= now && a.end > now; });
+/* ROBUST PARSERS */
+function parseDobString(str) {
+  if (!str) return { year: 2000, month: 1, day: 15 };
+  var parts = str.split(/[-/]/);
+  if (parts.length === 3) {
+    var p0 = parseInt(parts[0], 10);
+    var p1 = parseInt(parts[1], 10);
+    var p2 = parseInt(parts[2], 10);
+    if (p0 > 1000) {
+      return { year: p0, month: isNaN(p1) ? 1 : p1, day: isNaN(p2) ? 15 : p2 };
+    } else if (p2 > 1000) {
+      return { year: p2, month: isNaN(p1) ? 1 : p1, day: isNaN(p0) ? 15 : p0 };
+    }
   }
+  var d = new Date(str);
+  if (!isNaN(d.getTime())) {
+    return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate() };
+  }
+  return { year: 2000, month: 1, day: 15 };
+}
 
-  var data={name:name,gender:gender,dob:dob,tob:tob,place:place,lat:lat,lng:lng,jd:jd,planetsLon:planetsLon,lagnaSign:lagnaSign,moonSign:moonSign,sunSign:sunSign,lagnaRuler:lagnaRuler,moonNak:moonNak,lagnaNak:lagnaNak,hSigns:hSigns,pHouse:pHouse,dashas:dashas,dobDate:dobDate};
+function parseTobString(tobStr, hrParam, mnParam) {
+  if (hrParam !== undefined && mnParam !== undefined && !isNaN(hrParam) && !isNaN(mnParam)) {
+    return { hr: hrParam, mn: mnParam };
+  }
+  if (tobStr) {
+    var parts = tobStr.split(':');
+    if (parts.length >= 2) {
+      var h = parseInt(parts[0], 10);
+      var m = parseInt(parts[1], 10);
+      return { hr: isNaN(h) ? 12 : h, mn: isNaN(m) ? 0 : m };
+    }
+  }
+  return { hr: 12, mn: 0 };
+}
 
-  renderChart(hSigns,pHouse,planetsLon);
+/* MAIN GENERATE FORM HANDLER */
+function generate(form){
+  try {
+    var name = form.name || 'User';
+    var gender = form.gender || 'Male';
+    var dob = form.dob || '2000-01-15';
+    var tob = form.tob || '12:00';
+    var place = form.place || 'Kolkata, India';
+    var userLat = form.lat;
 
-  document.getElementById('r-name').textContent=name+"'s Kundali, Decoded";
-  document.getElementById('r-bio').textContent=gender+' · born '+dayName(dobDate)+', '+dobDate.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})+' · '+tob+' · '+place;
+    var dobParsed = parseDobString(dob);
+    var year = dobParsed.year, month = dobParsed.month, day = dobParsed.day;
 
-  var bHtml=[
-    '<div class="ck-badge">'+ZODIAC_SYM[sunIdx]+' Sun in '+sunSign+'</div>',
-    '<div class="ck-badge">Moon in '+moonSign+' &middot; '+moonNak+'</div>',
-    '<div class="ck-badge">&uarr; '+lagnaSign+' Lagna &middot; '+lagnaNak+'</div>',
-  ];
-  document.getElementById('r-badges').innerHTML=bHtml.join('');
+    var tobParsed = parseTobString(tob, form.hr, form.mn);
+    var hr = tobParsed.hr, mn = tobParsed.mn;
 
-  var fHtml=[];
-  if(cd) fHtml.push('<span>Mahadasha: <b>'+PNAME[cd.planet]+'</b></span>');
-  if(cAntar) fHtml.push('<span>Antardasha: <b>'+PNAME[cAntar.planet]+'</b> (until '+fmtDate(cAntar.end)+')</span>');
-  if(nd) fHtml.push('<span>Next Dasha: <b>'+PNAME[nd.planet]+'</b> from '+fmtDate(nd.start)+'</span>');
-  fHtml.push('<span>Age: <b>'+calcAge(dobDate)+'</b></span>');
-  document.getElementById('r-facts').innerHTML=fHtml.join('');
+    var dobDate = new Date(year, month - 1, day);
+    if(isNaN(dobDate.getTime())) dobDate = new Date(2000, 0, 15);
 
-  window._kd=data;
-  window._currentTab = 'overview';
-  window._kdMode = window._kdMode || 'simplified';
-  renderTab('overview',data);
+    var loc = lookupCity(place);
+    var lat = userLat ? parseFloat(userLat) : loc.lat;
+    var lng = loc.lng;
+    if(isNaN(lat)) lat = loc.lat;
+    if(isNaN(lng)) lng = loc.lng;
+
+    var tzOffset = -lng / 15;
+    var utHr = hr + mn / 60 + tzOffset;
+    var jd = toJD(year, month, day, utHr);
+
+    var trop = planetLon(jd);
+    var ay = ayanamsa(jd);
+    var planetsLon = {};
+    for (var p in trop) planetsLon[p] = norm(trop[p] - ay);
+
+    var ascTrop = calcAsc(jd, lat, lng);
+    planetsLon['As'] = norm(ascTrop - ay);
+
+    var lagnaIdx = signOf(planetsLon['As']);
+    var moonIdx = signOf(planetsLon['Mo']);
+    var sunIdx = signOf(planetsLon['Su']);
+
+    var lagnaSign = ZODIAC[lagnaIdx] || ZODIAC[0];
+    var moonSign = ZODIAC[moonIdx] || ZODIAC[0];
+    var sunSign = ZODIAC[sunIdx] || ZODIAC[0];
+
+    var lagnaRuler = RULERS[lagnaIdx] || RULERS[0];
+    var moonNakIdx = nakOf(planetsLon['Mo']);
+    var moonNak = NAKSHATRA[moonNakIdx] || NAKSHATRA[0];
+    var lagnaNakIdx = nakOf(planetsLon['As']);
+    var lagnaNak = NAKSHATRA[lagnaNakIdx] || NAKSHATRA[0];
+
+    var houses = buildHouses(planetsLon['As'], planetsLon);
+    var hSigns = houses.hSigns; var pHouse = houses.pHouse;
+
+    var dashas = calcDasha(planetsLon['Mo'], dobDate);
+    var cd = currentDasha(dashas); var nd = nextDasha(dashas);
+
+    var cAntar = null;
+    if (cd) {
+      var antars = calcAntardashas(cd.planet, cd.start, cd.end);
+      var now = new Date();
+      cAntar = antars.find(function(a){ return a.start <= now && a.end > now; });
+    }
+
+    var data = {
+      name: name, gender: gender, dob: dob, tob: tob, place: place,
+      lat: lat, lng: lng, jd: jd, planetsLon: planetsLon,
+      lagnaSign: lagnaSign, moonSign: moonSign, sunSign: sunSign,
+      lagnaRuler: lagnaRuler, moonNak: moonNak, lagnaNak: lagnaNak,
+      hSigns: hSigns, pHouse: pHouse, dashas: dashas, dobDate: dobDate
+    };
+
+    renderChart(hSigns, pHouse, planetsLon);
+
+    document.getElementById('r-name').textContent = name + "'s Kundali, Decoded";
+    document.getElementById('r-bio').textContent = gender + ' · born ' + dayName(dobDate) + ', ' + dobDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' + tob + ' · ' + place;
+
+    var bHtml = [
+      '<div class="ck-badge">' + ZODIAC_SYM[sunIdx] + ' Sun in ' + sunSign + '</div>',
+      '<div class="ck-badge">Moon in ' + moonSign + ' &middot; ' + moonNak + '</div>',
+      '<div class="ck-badge">&uarr; ' + lagnaSign + ' Lagna &middot; ' + lagnaNak + '</div>',
+    ];
+    document.getElementById('r-badges').innerHTML = bHtml.join('');
+
+    var fHtml = [];
+    if (cd) fHtml.push('<span>Mahadasha: <b>' + PNAME[cd.planet] + '</b></span>');
+    if (cAntar) fHtml.push('<span>Antardasha: <b>' + PNAME[cAntar.planet] + '</b> (until ' + fmtDate(cAntar.end) + ')</span>');
+    if (nd) fHtml.push('<span>Next Dasha: <b>' + PNAME[nd.planet] + '</b> from ' + fmtDate(nd.start) + '</span>');
+    fHtml.push('<span>Age: <b>' + calcAge(dobDate) + '</b></span>');
+    document.getElementById('r-facts').innerHTML = fHtml.join('');
+
+    window._kd = data;
+    window._currentTab = 'overview';
+    window._kdMode = window._kdMode || 'simplified';
+    renderTab('overview', data);
+  } catch (err) {
+    console.error('Generation calculation error:', err);
+    alert('Could not calculate chart for these birth details. Please check the inputs.');
+  }
 }
 
 function renderTab(id,data){
@@ -176,70 +238,89 @@ if(tabNavEl){
 
 /* FORM SUBMIT */
 var kundaliFormEl = document.getElementById('kundali-form');
-if(kundaliFormEl){
-  kundaliFormEl.addEventListener('submit',function(e){
-    e.preventDefault();
-    var name=document.getElementById('f-name').value.trim();
-    var gender=document.getElementById('f-gender').value;
-
-    var dobStr = '';
-    var dobEl = document.getElementById('f-dob');
-    if(dobEl && dobEl.value){
-      dobStr = dobEl.value;
-    } else {
-      var dDayEl = document.getElementById('f-dob-day');
-      var dMonthEl = document.getElementById('f-dob-month');
-      var dYearEl = document.getElementById('f-dob-year');
-      var dDay = dDayEl ? parseInt(dDayEl.value, 10) : 15;
-      var dMonth = dMonthEl ? parseInt(dMonthEl.value, 10) : 1;
-      var dYear = dYearEl ? parseInt(dYearEl.value, 10) : 2000;
-      dobStr = dYear + '-' + (dMonth < 10 ? '0' + dMonth : dMonth) + '-' + (dDay < 10 ? '0' + dDay : dDay);
+if (kundaliFormEl) {
+  kundaliFormEl.addEventListener('submit', function(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
-    if(!dobStr){ alert('Please select your date of birth.'); return; }
 
-    var tHr=parseInt(document.getElementById('f-tob-hr').value,10);
-    var tMin=parseInt(document.getElementById('f-tob-min').value,10);
-    var tAmPm=document.getElementById('f-tob-ampm').value;
-    if(isNaN(tHr)) tHr=12;
-    if(isNaN(tMin)) tMin=0;
-    var hr24 = tHr;
-    if(tAmPm === 'PM' && tHr < 12) hr24 = tHr + 12;
-    if(tAmPm === 'AM' && tHr === 12) hr24 = 0;
-    var tobStr = (hr24 < 10 ? '0' + hr24 : hr24) + ':' + (tMin < 10 ? '0' + tMin : tMin);
+    try {
+      var name = document.getElementById('f-name').value.trim();
+      var gender = document.getElementById('f-gender').value;
 
-    var place=document.getElementById('f-place').value.trim();
-    var lat=document.getElementById('f-lat').value;
+      var dobStr = '';
+      var dobEl = document.getElementById('f-dob');
+      if (dobEl && dobEl.value) {
+        dobStr = dobEl.value;
+      } else {
+        var dDayEl = document.getElementById('f-dob-day');
+        var dMonthEl = document.getElementById('f-dob-month');
+        var dYearEl = document.getElementById('f-dob-year');
+        var dDay = dDayEl ? parseInt(dDayEl.value, 10) : 15;
+        var dMonth = dMonthEl ? parseInt(dMonthEl.value, 10) : 1;
+        var dYear = dYearEl ? parseInt(dYearEl.value, 10) : 2000;
+        dobStr = dYear + '-' + (dMonth < 10 ? '0' + dMonth : dMonth) + '-' + (dDay < 10 ? '0' + dDay : dDay);
+      }
+      if (!dobStr) { alert('Please select your date of birth.'); return false; }
 
-    if(!name){ alert('Please enter your full name.'); return; }
-    if(!place){ alert('Please enter your birth city.'); return; }
+      var tHr = parseInt(document.getElementById('f-tob-hr').value, 10);
+      var tMin = parseInt(document.getElementById('f-tob-min').value, 10);
+      var tAmPm = document.getElementById('f-tob-ampm').value;
+      if (isNaN(tHr)) tHr = 12;
+      if (isNaN(tMin)) tMin = 0;
+      var hr24 = tHr;
+      if (tAmPm === 'PM' && tHr < 12) hr24 = tHr + 12;
+      if (tAmPm === 'AM' && tHr === 12) hr24 = 0;
+      var tobStr = (hr24 < 10 ? '0' + hr24 : hr24) + ':' + (tMin < 10 ? '0' + tMin : tMin);
 
-    var formWrap = document.querySelector('.form-wrap');
-    if(formWrap) formWrap.classList.add('is-warping');
+      var place = document.getElementById('f-place').value.trim();
+      var lat = document.getElementById('f-lat').value;
 
-    var loader = document.getElementById('loading');
-    var loaderMsg = document.getElementById('loading-msg');
+      if (!name) { alert('Please enter your full name.'); return false; }
+      if (!place) { alert('Please enter your birth city.'); return false; }
 
-    setTimeout(function(){
-      if(loader) loader.classList.add('show');
-      if(loaderMsg) loaderMsg.textContent = 'Casting Your Cosmic Kundali…';
-    }, 200);
+      var formWrap = document.querySelector('.form-wrap');
+      if (formWrap) formWrap.classList.add('is-warping');
 
-    setTimeout(function(){
-      generate({name:name,gender:gender,dob:dobStr,tob:tobStr,place:place,lat:lat,hr:hr24,mn:tMin});
-      if(loader) loader.classList.remove('show');
-      if(formWrap) formWrap.classList.remove('is-warping');
+      var loader = document.getElementById('loading');
+      var loaderMsg = document.getElementById('loading-msg');
 
-      document.getElementById('screen-form').style.display = 'none';
-      var resScreen = document.getElementById('screen-result');
-      resScreen.style.display = 'block';
-      resScreen.classList.add('is-entering');
+      setTimeout(function() {
+        if (loader) loader.classList.add('show');
+        if (loaderMsg) loaderMsg.textContent = 'Casting Your Cosmic Kundali…';
+      }, 150);
 
-      window.scrollTo({top:0, behavior:'smooth'});
+      setTimeout(function() {
+        try {
+          generate({ name: name, gender: gender, dob: dobStr, tob: tobStr, place: place, lat: lat, hr: hr24, mn: tMin });
+          if (loader) loader.classList.remove('show');
+          if (formWrap) formWrap.classList.remove('is-warping');
 
-      setTimeout(function(){
-        resScreen.classList.remove('is-entering');
+          document.getElementById('screen-form').style.display = 'none';
+          var resScreen = document.getElementById('screen-result');
+          resScreen.style.display = 'block';
+          resScreen.classList.add('is-entering');
+
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+
+          setTimeout(function() {
+            resScreen.classList.remove('is-entering');
+          }, 800);
+        } catch (err2) {
+          console.error('Submission execution error:', err2);
+          if (loader) loader.classList.remove('show');
+          if (formWrap) formWrap.classList.remove('is-warping');
+          alert('Error generating chart. Please check inputs.');
+        }
       }, 900);
-    }, 1200);
+
+    } catch (errOuter) {
+      console.error('Outer submission error:', errOuter);
+      alert('Could not submit form: ' + errOuter.message);
+    }
+
+    return false;
   });
 }
 
