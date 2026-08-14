@@ -20,9 +20,9 @@ var I18N = {
     tab_love: 'Love & Union',
     tab_health: 'Health & Vitality',
     tab_wealth: 'Wealth / Artha',
-    cast_another: '← Cast Another',
-    save_db: '💾 Save to Database',
-    export_pdf: '📄 Export PDF Report'
+    cast_another: 'Cast Another',
+    save_db: 'Save to Database',
+    export_pdf: 'Export PDF Report'
   },
   hi: {
     kicker: 'ब्रह्मांडीय भाग्य के वास्तुकार',
@@ -44,9 +44,9 @@ var I18N = {
     tab_love: 'प्रेम एवं विवाह',
     tab_health: 'स्वास्थ्य एवं ऊर्जा',
     tab_wealth: 'धन एवं अर्थ',
-    cast_another: '← नई कुंडली बनाएं',
-    save_db: '💾 डेटाबेस में सहेजें',
-    export_pdf: '📄 पीडीएफ रिपोर्ट डाउनलोड'
+    cast_another: 'नई कुंडली बनाएं',
+    save_db: 'डेटाबेस में सहेजें',
+    export_pdf: 'पीडीएफ रिपोर्ट डाउनलोड'
   },
   bn: {
     kicker: 'মহাজাগতিক ভাগ্যের স্থপতি',
@@ -68,9 +68,9 @@ var I18N = {
     tab_love: 'প্রেম ও বিবাহ',
     tab_health: 'স্বাস্থ্য ও শক্তি',
     tab_wealth: 'সম্পদ ও অর্থ',
-    cast_another: '← নতুন কুণ্ডলী বানান',
-    save_db: '💾 ডাটাবেসে সেভ করুন',
-    export_pdf: '📄 পিডিএফ রিপোর্ট ডাউনলোড'
+    cast_another: 'নতুন কুণ্ডলী বানান',
+    save_db: 'ডাটাবেসে সেভ করুন',
+    export_pdf: 'পিডিএফ রিপোর্ট ডাউনলোড'
   },
   mr: {
     kicker: 'ब्रह्मांडीय भविष्याचे शिल्पकार',
@@ -92,9 +92,9 @@ var I18N = {
     tab_love: 'प्रेम व विवाह',
     tab_health: 'आरोग्य व ऊर्जा',
     tab_wealth: 'संपत्ती व अर्थ',
-    cast_another: '← पुन्हा कुंडली करा',
-    save_db: '💾 डेटाबेसमध्ये जतन करा',
-    export_pdf: '📄 पीडीएफ अहवाल डाउनलोड'
+    cast_another: 'पुन्हा कुंडली करा',
+    save_db: 'डेटाबेसमध्ये जतन करा',
+    export_pdf: 'पीडीएफ अहवाल डाउनलोड'
   },
   ta: {
     kicker: 'பிரபஞ்ச விதியின் சிற்பி',
@@ -116,9 +116,9 @@ var I18N = {
     tab_love: 'அன்பு & திருமணம்',
     tab_health: 'ஆரோக்கியம் & வளம்',
     tab_wealth: 'செல்வம் & பொருள்',
-    cast_another: '← மீண்டும் கணிக்க',
-    save_db: '💾 சேமிக்கவும்',
-    export_pdf: '📄 PDF அறிக்கை பதிவிறக்கு'
+    cast_another: 'மீண்டும் கணிக்க',
+    save_db: 'சேமிக்கவும்',
+    export_pdf: 'PDF அறிக்கை பதிவிறக்கு'
   },
   te: {
     kicker: 'విశ్వ విధాత రూపకర్త',
@@ -140,9 +140,9 @@ var I18N = {
     tab_love: 'ప్రేమ & బంధం',
     tab_health: 'ఆరోగ్యం & శక్తి',
     tab_wealth: 'సంపద & అర్థం',
-    cast_another: '← మరొకటి చూడండి',
-    save_db: '💾 డేటాబేస్‌లో సేవ్‌ చేయండి',
-    export_pdf: '📄 PDF నివేదిక డౌన్‌లోడ్'
+    cast_another: 'మరొకటి చూడండి',
+    save_db: 'డేటాబేస్‌లో సేవ్‌ చేయండి',
+    export_pdf: 'PDF నివేదిక డౌన్‌లోడ్'
   },
   gu: {
     kicker: 'બ્રહ્માંડીય ભાગ્યના શિલ્પી',
@@ -164,9 +164,9 @@ var I18N = {
     tab_love: 'પ્રેમ અને સગાઈ',
     tab_health: 'સ્વાસ્થ્ય અને આરોગ્ય',
     tab_wealth: 'સંપત્તિ અને અર્થ',
-    cast_another: '← નવી કુંડળી બનાવો',
-    save_db: '💾 ડેટાબેઝમાં સાચવો',
-    export_pdf: '📄 PDF રિપોર્ટ ડાઉનલોડ'
+    cast_another: 'નવી કુંડળી બનાવો',
+    save_db: 'ડેટાબેઝમાં સાચવો',
+    export_pdf: 'PDF રિપોર્ટ ડાઉનલોડ'
   }
 };
 
@@ -227,12 +227,12 @@ function applyLanguage(lang) {
   var tabWea = document.querySelector('#tab-btn-wealth .tab-txt');
   if(tabWea) tabWea.textContent = dict.tab_wealth;
 
-  var btnBack = document.getElementById('btn-back');
-  if(btnBack) btnBack.textContent = dict.cast_another;
-  var btnSave = document.getElementById('btn-save');
-  if(btnSave) btnSave.textContent = dict.save_db;
-  var btnPdf = document.getElementById('btn-export-pdf');
-  if(btnPdf) btnPdf.textContent = dict.export_pdf;
+  var txtBack = document.getElementById('txt-back');
+  if(txtBack) txtBack.textContent = dict.cast_another;
+  var txtSave = document.getElementById('txt-save');
+  if(txtSave) txtSave.textContent = dict.save_db;
+  var txtPdf = document.getElementById('txt-export-pdf');
+  if(txtPdf) txtPdf.textContent = dict.export_pdf;
 
   var langSelect = document.getElementById('lang-select');
   if(langSelect) langSelect.value = lang;
