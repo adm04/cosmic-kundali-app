@@ -253,3 +253,6 @@ if(langSelectEl){
   var saved = localStorage.getItem('ck_lang') || 'en';
   applyLanguage(saved);
 })();
+
+window.I18N = I18N;
+window.applyLanguage = applyLanguage;

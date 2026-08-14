@@ -308,3 +308,6 @@ if(pdfBtn){
     }
   });
 }
+
+window.generate = generate;
+window.renderTab = renderTab;

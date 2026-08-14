@@ -314,3 +314,42 @@ function calcAntardashas(mahaPlanet, mahaStart, mahaEnd) {
   }
   return antars;
 }
+
+window.CITIES = CITIES;
+window.lookupCity = lookupCity;
+window.ZODIAC = ZODIAC;
+window.ZODIAC_SYM = ZODIAC_SYM;
+window.RULERS = RULERS;
+window.NAKSHATRA = NAKSHATRA;
+window.NAK_LORDS = NAK_LORDS;
+window.DASHA_YRS = DASHA_YRS;
+window.DASHA_ORDER = DASHA_ORDER;
+window.norm = norm;
+window.sind = sind;
+window.cosd = cosd;
+window.tand = tand;
+window.toJD = toJD;
+window.planetLon = planetLon;
+window.ayanamsa = ayanamsa;
+window.calcAsc = calcAsc;
+window.signOf = signOf;
+window.degInSign = degInSign;
+window.nakOf = nakOf;
+window.calcDasha = calcDasha;
+window.buildHouses = buildHouses;
+window.renderChart = renderChart;
+window.PNAME = PNAME;
+window.HTHEME = HTHEME;
+window.ord = ord;
+window.fmtDate = fmtDate;
+window.abbr = abbr;
+window.currentDasha = currentDasha;
+window.nextDasha = nextDasha;
+window.calcAge = calcAge;
+window.dayName = dayName;
+window.NAK_DEITIES = NAK_DEITIES;
+window.PADA_NOTE = PADA_NOTE;
+window.fmtDegMin = fmtDegMin;
+window.getPlanetDignity = getPlanetDignity;
+window.detectChartSignature = detectChartSignature;
+window.calcAntardashas = calcAntardashas;

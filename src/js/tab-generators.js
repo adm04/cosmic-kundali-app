@@ -483,3 +483,22 @@ function getW2Note(ps){
   if(ps.indexOf('Venus')>=0)return 'Venus here — income may come through beauty, luxury, or relationship';
   return 'these planets colour how wealth accumulates and what it means to you';
 }
+
+window.NAK_DESC = NAK_DESC;
+window.SIGN_DESC = SIGN_DESC;
+window.CAREER_Q = CAREER_Q;
+window.LOVE_Q = LOVE_Q;
+window.BODY_FOCUS = BODY_FOCUS;
+window.VENUS_NOTE = VENUS_NOTE;
+window.DASHA_CAREER = DASHA_CAREER;
+window.PLANET_UPAYA = PLANET_UPAYA;
+window.WEALTH_H11 = WEALTH_H11;
+window.getAscTakeaways = getAscTakeaways;
+window.getMoonTakeaways = getMoonTakeaways;
+window.genHorizonTimeline = genHorizonTimeline;
+window.genOverview = genOverview;
+window.genCareer = genCareer;
+window.genLove = genLove;
+window.genHealth = genHealth;
+window.genWealth = genWealth;
+window.getW2Note = getW2Note;
