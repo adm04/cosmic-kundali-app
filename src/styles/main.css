@@ -423,8 +423,15 @@ input[type="date"]#f-dob::-webkit-datetime-edit-year-field:focus {
   border:1px solid var(--gold); border-radius:14px; padding:15px;
   color:var(--gold-bright); font-family:'Cinzel',serif;
   font-size:13px; letter-spacing:0.15em; text-transform:uppercase;
-  cursor:pointer; transition:all 0.3s ease;
+  cursor:pointer; transition:transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease, background 0.3s ease, box-shadow 0.3s ease;
   box-shadow:0 0 20px rgba(201,162,75,0.1);
+  position: relative;
+  z-index: 1;
+}
+body.city-dropdown-open .generate-btn {
+  transform: translateY(210px);
+  opacity: 0.2;
+  pointer-events: none;
 }
 .generate-btn:hover { background:linear-gradient(135deg,rgba(201,162,75,0.4),rgba(201,162,75,0.15)); box-shadow:0 0 30px rgba(201,162,75,0.25); transform:translateY(-1px); }
 .generate-btn:active { transform:translateY(0); }

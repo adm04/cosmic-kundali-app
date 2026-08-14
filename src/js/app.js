@@ -51,6 +51,7 @@ import html2pdf from 'html2pdf.js';
 
     if (!itemsList || itemsList.length === 0) {
       suggestions.classList.remove('show');
+      document.body.classList.remove('city-dropdown-open');
       return;
     }
 
@@ -77,6 +78,7 @@ import html2pdf from 'html2pdf.js';
         }
         suggestions.classList.remove('show');
         suggestions.innerHTML = '';
+        document.body.classList.remove('city-dropdown-open');
       }
 
       div.addEventListener('mousedown', selectCity);
@@ -87,6 +89,7 @@ import html2pdf from 'html2pdf.js';
     });
 
     suggestions.classList.add('show');
+    document.body.classList.add('city-dropdown-open');
   }
 
   input.addEventListener('input', function() {
@@ -96,6 +99,7 @@ import html2pdf from 'html2pdf.js';
     if (!val || val.length < 2) {
       suggestions.innerHTML = '';
       suggestions.classList.remove('show');
+      document.body.classList.remove('city-dropdown-open');
       return;
     }
 
@@ -171,6 +175,7 @@ import html2pdf from 'html2pdf.js';
   document.addEventListener('click', function(e) {
     if (e.target !== input && !suggestions.contains(e.target)) {
       suggestions.classList.remove('show');
+      document.body.classList.remove('city-dropdown-open');
     }
   });
 })();
