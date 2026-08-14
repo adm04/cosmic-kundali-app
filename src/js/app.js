@@ -388,37 +388,54 @@ if(pdfBtn){
   pdfBtn.addEventListener('click', function(){
     if(!window._kd){ alert('No chart generated to export.'); return; }
 
-    var d = window._kd;
-    var nameClean = (d.name || 'Kundali').replace(/[^a-zA-Z0-9_-]/g, '_');
+    try {
+      var d = window._kd;
+      var nameClean = (d.name || 'Kundali').replace(/[^a-zA-Z0-9_-]/g, '_');
 
-    var tempWrap = document.createElement('div');
-    tempWrap.id = 'pdf-export-temp-wrap';
-    tempWrap.style.cssText = 'position:fixed; left:-9999px; top:0; width:720px; background:#0a0818; z-index:-9999;';
-    tempWrap.innerHTML = buildPdfReportHtml(d);
-    document.body.appendChild(tempWrap);
+      var tempWrap = document.createElement('div');
+      tempWrap.id = 'pdf-export-temp-wrap';
+      tempWrap.style.cssText = 'position:fixed; inset:0; background:rgba(10,8,24,0.96); z-index:99999; display:flex; flex-direction:column; align-items:center; overflow-y:auto; padding:30px 10px; backdrop-filter:blur(12px);';
 
-    var targetEl = tempWrap.firstElementChild;
+      var loadingNotice = document.createElement('div');
+      loadingNotice.style.cssText = 'font-family:\'Cinzel\', serif; font-size:12px; letter-spacing:0.2em; color:#f2d38a; text-transform:uppercase; margin-bottom:20px; background:rgba(201,162,75,0.15); border:1px solid #c9a24b; padding:10px 24px; border-radius:999px;';
+      loadingNotice.innerHTML = '✦ Generating High-Resolution PDF Report... ✦';
+      tempWrap.appendChild(loadingNotice);
 
-    if(typeof html2pdf !== 'undefined'){
-      var opt = {
-        margin: [0.2, 0.2, 0.2, 0.2],
-        filename: nameClean + '_Cosmic_Kundali_Report.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0a0818' },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'] }
-      };
+      var reportHolder = document.createElement('div');
+      reportHolder.innerHTML = buildPdfReportHtml(d);
+      tempWrap.appendChild(reportHolder);
 
-      html2pdf().set(opt).from(targetEl).save().then(function(){
-        if(document.body.contains(tempWrap)) document.body.removeChild(tempWrap);
-      }).catch(function(err){
-        console.warn('html2pdf fallback to print:', err);
-        if(document.body.contains(tempWrap)) document.body.removeChild(tempWrap);
-        window.print();
-      });
-    } else {
-      window.print();
-      if(document.body.contains(tempWrap)) document.body.removeChild(tempWrap);
+      document.body.appendChild(tempWrap);
+
+      var targetEl = reportHolder.firstElementChild || reportHolder;
+
+      setTimeout(function(){
+        if(typeof html2pdf !== 'undefined'){
+          var opt = {
+            margin: [0.2, 0.2, 0.2, 0.2],
+            filename: nameClean + '_Cosmic_Kundali_Report.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0a0818', scrollX: 0, scrollY: 0 },
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+            pagebreak: { mode: ['css', 'legacy'] }
+          };
+
+          html2pdf().set(opt).from(targetEl).save().then(function(){
+            if(document.body.contains(tempWrap)) document.body.removeChild(tempWrap);
+          }).catch(function(err){
+            console.warn('html2pdf fallback to print:', err);
+            if(document.body.contains(tempWrap)) document.body.removeChild(tempWrap);
+            window.print();
+          });
+        } else {
+          window.print();
+          if(document.body.contains(tempWrap)) document.body.removeChild(tempWrap);
+        }
+      }, 300);
+
+    } catch (exportErr) {
+      console.error('PDF export error:', exportErr);
+      alert('Could not generate PDF: ' + exportErr.message);
     }
   });
 }
