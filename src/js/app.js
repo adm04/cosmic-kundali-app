@@ -182,10 +182,20 @@ if(kundaliFormEl){
     var name=document.getElementById('f-name').value.trim();
     var gender=document.getElementById('f-gender').value;
 
-    var dDay=parseInt(document.getElementById('f-dob-day').value,10);
-    var dMonth=parseInt(document.getElementById('f-dob-month').value,10);
-    var dYear=parseInt(document.getElementById('f-dob-year').value,10);
-    var dobStr = dYear + '-' + (dMonth < 10 ? '0' + dMonth : dMonth) + '-' + (dDay < 10 ? '0' + dDay : dDay);
+    var dobStr = '';
+    var dobEl = document.getElementById('f-dob');
+    if(dobEl && dobEl.value){
+      dobStr = dobEl.value;
+    } else {
+      var dDayEl = document.getElementById('f-dob-day');
+      var dMonthEl = document.getElementById('f-dob-month');
+      var dYearEl = document.getElementById('f-dob-year');
+      var dDay = dDayEl ? parseInt(dDayEl.value, 10) : 15;
+      var dMonth = dMonthEl ? parseInt(dMonthEl.value, 10) : 1;
+      var dYear = dYearEl ? parseInt(dYearEl.value, 10) : 2000;
+      dobStr = dYear + '-' + (dMonth < 10 ? '0' + dMonth : dMonth) + '-' + (dDay < 10 ? '0' + dDay : dDay);
+    }
+    if(!dobStr){ alert('Please select your date of birth.'); return; }
 
     var tHr=parseInt(document.getElementById('f-tob-hr').value,10);
     var tMin=parseInt(document.getElementById('f-tob-min').value,10);
