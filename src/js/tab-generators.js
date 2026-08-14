@@ -477,20 +477,31 @@ function genWealth(d, mode){
 }
 
 function renderCleanPdfSvgChart(hSigns, pHouse, planetsLon) {
+  var pOrderList = window.PORDER || ['As','Su','Mo','Ma','Me','Ve','Ju','Sa','Ra','Ke'];
+  var hPolyMap = window.HPOLY || {
+    1:'200,0 400,200 200,400 0,200',2:'0,0 200,0 0,200',3:'0,0 0,200 200,0',
+    4:'0,200 200,200 0,400',5:'0,200 0,400 200,400',6:'0,400 200,400 200,200',
+    7:'200,400 400,400 200,200',8:'200,400 400,400 400,200',9:'400,400 400,200 200,400',
+    10:'400,200 200,200 400,0',11:'400,200 400,0 200,0',12:'400,0 200,0 200,200'
+  };
+  var hLabelMap = window.HLABEL || {1:[200,30],2:[95,22],3:[22,95],4:[100,205],5:[22,305],6:[100,378],7:[200,370],8:[305,378],9:[378,305],10:[300,205],11:[378,95],12:[305,22]};
+  var hContentMap = window.HCONTENT || {1:[200,90],2:[100,40],3:[40,100],4:[100,200],5:[40,300],6:[100,355],7:[200,300],8:[300,355],9:[355,300],10:[300,200],11:[355,100],12:[300,40]};
+
   var hPlanets = {};
-  PORDER.forEach(function(p) {
+  pOrderList.forEach(function(p) {
     var h = pHouse[p];
     if (h) { if (!hPlanets[h]) hPlanets[h] = []; hPlanets[h].push(p); }
   });
 
   var polygonsHtml = '';
   for (var h = 1; h <= 12; h++) {
-    polygonsHtml += '<polygon points="' + HPOLY[h] + '" fill="' + (hPlanets[h] ? 'rgba(201,162,75,0.12)' : '#150f2b') + '" stroke="rgba(201,162,75,0.7)" stroke-width="1.5"/>';
+    var pts = hPolyMap[h] || '200,0 400,200 200,400 0,200';
+    polygonsHtml += '<polygon points="' + pts + '" fill="' + (hPlanets[h] ? 'rgba(201,162,75,0.12)' : '#150f2b') + '" stroke="rgba(201,162,75,0.7)" stroke-width="1.5"/>';
   }
 
   var labelsHtml = '';
   for (var h = 1; h <= 12; h++) {
-    var pos = HLABEL[h]; var lx = pos[0], ly = pos[1];
+    var pos = hLabelMap[h] || [200, 200]; var lx = pos[0], ly = pos[1];
     var dy = (h === 1 || h === 7) ? 14 : (h === 4 || h === 10) ? 0 : 12;
     labelsHtml += '<text x="' + lx + '" y="' + ly + '" text-anchor="middle" fill="#c9a24b" font-size="10" font-family="Inter, sans-serif" font-weight="600">' + h + '</text>';
     labelsHtml += '<text x="' + lx + '" y="' + (ly + dy) + '" text-anchor="middle" fill="#a99bcb" font-size="8" font-family="Inter, sans-serif">' + hSigns[h] + '</text>';
@@ -499,7 +510,7 @@ function renderCleanPdfSvgChart(hSigns, pHouse, planetsLon) {
   var planetsHtml = '';
   for (var h = 1; h <= 12; h++) {
     if (!hPlanets[h]) continue;
-    var ps = hPlanets[h]; var cp = HCONTENT[h]; var cx = cp[0], cy = cp[1];
+    var ps = hPlanets[h]; var cp = hContentMap[h] || [200, 200]; var cx = cp[0], cy = cp[1];
     var perRow = ps.length > 3 ? 3 : ps.length;
     ps.forEach(function(p, i) {
       var row = Math.floor(i / perRow), col = i % perRow;

@@ -353,3 +353,7 @@ window.fmtDegMin = fmtDegMin;
 window.getPlanetDignity = getPlanetDignity;
 window.detectChartSignature = detectChartSignature;
 window.calcAntardashas = calcAntardashas;
+window.PORDER = PORDER;
+window.HPOLY = HPOLY;
+window.HLABEL = HLABEL;
+window.HCONTENT = HCONTENT;
