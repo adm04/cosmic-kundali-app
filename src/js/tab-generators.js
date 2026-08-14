@@ -645,6 +645,15 @@ function buildPdfReportHtml(d) {
   '</div>';
 }
 
+function getW2Note(ps){
+  if(!ps) return 'these planets colour how wealth accumulates and what it means to you';
+  if(ps.indexOf('Jupiter')>=0&&ps.indexOf('Saturn')>=0)return 'growth and discipline stand guard — a genuinely strong signature for compounding wealth';
+  if(ps.indexOf('Jupiter')>=0)return 'Jupiter here is a classic wealth-house blessing — expansion and optimism colour your financial story';
+  if(ps.indexOf('Saturn')>=0)return 'Saturn demands patience but rewards consistency with lasting financial structure';
+  if(ps.indexOf('Venus')>=0)return 'Venus here — income may come through beauty, luxury, or relationship';
+  return 'these planets colour how wealth accumulates and what it means to you';
+}
+
 window.NAK_DESC = NAK_DESC;
 window.SIGN_DESC = SIGN_DESC;
 window.CAREER_Q = CAREER_Q;
