@@ -14,7 +14,7 @@ import html2pdf from 'html2pdf.js';
   }
 })();
 
-/* INTERACTIVE CITY SEARCH AUTOCOMPLETE */
+/* INTERACTIVE CITY SEARCH AUTOCOMPLETE & LIVE OPENSTREETMAP API GEOCODER */
 (function(){
   var input = document.getElementById('f-place');
   var suggestions = document.getElementById('city-suggestions');
@@ -22,45 +22,38 @@ import html2pdf from 'html2pdf.js';
   if(!input || !suggestions) return;
 
   var currentFocus = -1;
+  var apiTimer = null;
 
   function capitalize(str) {
     return str.replace(/\b\w/g, function(l){ return l.toUpperCase(); });
   }
 
-  function getCityList() {
+  function getLocalMatches(val) {
     var keys = [];
     var seen = {};
     var cityMap = (typeof CITIES !== 'undefined' ? CITIES : (window.CITIES || {}));
     for (var k in cityMap) {
-      var display = capitalize(k);
-      if (!seen[display]) {
-        seen[display] = true;
-        keys.push({ raw: k, display: display, data: cityMap[k] });
+      if (k.indexOf(val) >= 0) {
+        var display = capitalize(k);
+        if (!seen[display]) {
+          seen[display] = true;
+          keys.push({ raw: k, display: display, data: cityMap[k], source: 'local' });
+        }
       }
     }
-    return keys;
+    return keys.slice(0, 10);
   }
 
-  input.addEventListener('input', function() {
-    var val = this.value.trim().toLowerCase();
+  function renderItems(itemsList) {
     suggestions.innerHTML = '';
     currentFocus = -1;
-    if (!val) {
+
+    if (!itemsList || itemsList.length === 0) {
       suggestions.classList.remove('show');
       return;
     }
 
-    var allCities = getCityList();
-    var matches = allCities.filter(function(item) {
-      return item.raw.indexOf(val) >= 0;
-    }).slice(0, 12);
-
-    if (matches.length === 0) {
-      suggestions.classList.remove('show');
-      return;
-    }
-
-    matches.forEach(function(item, idx) {
+    itemsList.forEach(function(item, idx) {
       var div = document.createElement('div');
       div.className = 'ck-city-item';
       div.dataset.index = idx;
@@ -73,7 +66,9 @@ import html2pdf from 'html2pdf.js';
 
       div.addEventListener('click', function() {
         input.value = item.display;
-        if(latInput && item.data) latInput.value = item.data.lat;
+        if (latInput && item.data && item.data.lat !== undefined) {
+          latInput.value = item.data.lat;
+        }
         suggestions.classList.remove('show');
       });
 
@@ -81,6 +76,57 @@ import html2pdf from 'html2pdf.js';
     });
 
     suggestions.classList.add('show');
+  }
+
+  input.addEventListener('input', function() {
+    var val = this.value.trim().toLowerCase();
+    if (apiTimer) clearTimeout(apiTimer);
+
+    if (!val || val.length < 2) {
+      suggestions.innerHTML = '';
+      suggestions.classList.remove('show');
+      return;
+    }
+
+    var localMatches = getLocalMatches(val);
+    renderItems(localMatches);
+
+    // Live API query for 100% full Indian coverage
+    apiTimer = setTimeout(function() {
+      fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURIComponent(val) + '&countrycodes=in&limit=8&addressdetails=1', {
+        headers: { 'Accept': 'application/json' }
+      })
+      .then(function(res){ return res.json(); })
+      .then(function(apiResults) {
+        if (!apiResults || apiResults.length === 0) return;
+
+        var combined = localMatches.slice();
+        var seenNames = {};
+        combined.forEach(function(m){ seenNames[m.display.toLowerCase()] = true; });
+
+        apiResults.forEach(function(res) {
+          var addr = res.address || {};
+          var cityTitle = addr.city || addr.town || addr.village || addr.suburb || addr.county || res.display_name.split(',')[0];
+          var stateTitle = addr.state || addr.state_district || 'India';
+          var fullDisplay = cityTitle + ', ' + stateTitle;
+
+          if (!seenNames[fullDisplay.toLowerCase()]) {
+            seenNames[fullDisplay.toLowerCase()] = true;
+            combined.push({
+              raw: fullDisplay.toLowerCase(),
+              display: fullDisplay,
+              data: { lat: parseFloat(res.lat), lng: parseFloat(res.lon) },
+              source: 'api'
+            });
+          }
+        });
+
+        renderItems(combined.slice(0, 14));
+      })
+      .catch(function(err) {
+        // Silent fallback
+      });
+    }, 280);
   });
 
   input.addEventListener('keydown', function(e) {
