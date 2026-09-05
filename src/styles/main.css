@@ -1734,26 +1734,198 @@ body.city-dropdown-open .generate-btn,
   color: #f2d38a;
 }
 
-/* CORRESPONDENCES GRID (DATA MODEL PRESENTATION) */
-.ck-correspondences-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px 16px;
-  font-size: 13px;
-  line-height: 1.5;
-  color: #ffffff;
+/* 2-COLUMN SACRED INFO GRID TABLE */
+.ck-info-grid-card {
+  margin-bottom: 24px;
 }
 
-.ck-correspondences-grid div {
-  background: rgba(10, 8, 24, 0.4);
+.ck-num-table-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+  width: 100%;
+}
+
+.ck-table-cell {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(14, 10, 30, 0.6);
+  border: 1px solid rgba(201, 162, 75, 0.16);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.ck-table-cell:hover {
+  border-color: rgba(201, 162, 75, 0.35);
+  background: rgba(24, 18, 50, 0.7);
+}
+
+.ck-cell-lbl {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #f2d38a;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.ck-cell-val {
+  color: #ffffff;
+  text-align: right;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.ck-table-full {
+  grid-column: 1 / -1;
+  justify-content: space-between;
+}
+
+.ck-table-mantra {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(255, 140, 0, 0.05);
+  border: 1px solid rgba(255, 158, 66, 0.35);
+}
+
+.ck-mantra-highlight {
+  font-family: 'Cinzel', serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #ff9e42;
+  text-shadow: 0 0 10px rgba(255, 158, 66, 0.35);
+  letter-spacing: 0.03em;
   padding: 6px 10px;
   border-radius: 6px;
-  border: 1px solid rgba(201, 162, 75, 0.12);
+  background: rgba(255, 140, 0, 0.1);
+  border: 1px solid rgba(255, 158, 66, 0.25);
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.ck-correspondences-grid b {
-  color: #f2d38a;
-  margin-right: 4px;
+/* NUMBER BREAKDOWN CARDS (2 PARAGRAPHS WITH NUMBERED BADGE) */
+.ck-num-breakdown-card {
+  margin-bottom: 24px;
+}
+
+.ck-num-badge-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f2d38a 0%, #c9a24b 100%);
+  color: #0a0818;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 12px;
+  margin-right: 6px;
+  box-shadow: 0 0 8px rgba(201, 162, 75, 0.4);
+}
+
+.ck-num-badge-icon.ck-badge-rose {
+  background: linear-gradient(135deg, #ff9ebb 0%, #c26b7a 100%);
+  color: #ffffff;
+  box-shadow: 0 0 8px rgba(194, 107, 122, 0.4);
+}
+
+.ck-num-badge-icon.ck-badge-sage {
+  background: linear-gradient(135deg, #b8e0c2 0%, #7aa887 100%);
+  color: #0a0818;
+  box-shadow: 0 0 8px rgba(122, 168, 135, 0.4);
+}
+
+.ck-lead-p {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #f7efff;
+  margin-bottom: 12px;
+}
+
+/* TRAIT CARDS (COMPASS, HEART, CLOCK, CAREER, REMEDIES) */
+.ck-trait-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.ck-trait-card {
+  margin-bottom: 0 !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.ck-trait-card .ck-card-body {
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+/* SACRED YANTRA CARD LAYOUT */
+.ck-trait-yantra-card {
+  margin-bottom: 24px;
+}
+
+.ck-yantra-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 24px;
+  align-items: center;
+}
+
+.ck-yantra-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.ck-yantra-visual-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.ck-yantra-svg {
+  width: 100%;
+  max-width: 270px;
+  height: auto;
+  filter: drop-shadow(0 0 18px rgba(201, 162, 75, 0.3));
+  transition: transform 0.4s ease;
+}
+
+.ck-yantra-svg:hover {
+  transform: scale(1.03);
+}
+
+@media (max-width: 860px) {
+  .ck-trait-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .ck-yantra-layout {
+    grid-template-columns: 1fr;
+  }
+  .ck-num-table-grid {
+    grid-template-columns: 1fr;
+  }
+  .ck-table-cell {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .ck-cell-val {
+    text-align: left;
+  }
 }
 
 /* RESPONSIVE DESIGN (LAPTOP & MOBILE) */
