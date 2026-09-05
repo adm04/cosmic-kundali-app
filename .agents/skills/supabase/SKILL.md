@@ -6,8 +6,8 @@ description: Best practices and reference guidelines for working with Supabase d
 # Supabase Development Guide
 
 ## Project Credentials
-- **Project URL**: `https://qvvgiayrwagpcrluegot.supabase.co`
-- **Publishable Key**: `sb_publishable_F9-HQwvO02BIVwbgTmrY7w_Imb3fw9X`
+- **Project URL**: `https://your-project.supabase.co` (or set `VITE_SUPABASE_URL` in `.env`)
+- **Publishable Key**: `your_supabase_anon_key_here` (or set `VITE_SUPABASE_ANON_KEY` in `.env`)
 
 ## Recommended Patterns
 1. **REST API Queries**:

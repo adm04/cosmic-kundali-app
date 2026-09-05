@@ -1,4 +1,8 @@
 /* TAB CONTENT & HORIZON TIMELINE GENERATORS */
+import { generateVedicNumerologyReport } from './numerology-data.js';
+
+
+
 
 var NAK_DESC={
   'Ashwini':'a spirit of swift healing and pioneering instinct',
@@ -676,6 +680,139 @@ function getW2Note(ps){
   return 'these planets colour how wealth accumulates and what it means to you';
 }
 
+function genNumerology(d, mode) {
+  var isSimple = (mode === 'simplified');
+  var rep = generateVedicNumerologyReport(d.name, d.dob);
+  var nums = rep.numbers;
+  var mData = rep.data.mulank;
+  var bData = rep.data.bhagyank;
+  var nData = rep.data.namank;
+  var mContent = rep.content.mulank;
+  var bContent = rep.content.bhagyank;
+  var nContent = rep.content.namank;
+
+  // Headline Stat Cards (Radical / Destiny / Name) matching existing app card style
+  var headlineCardsHtml =
+    '<div class="ck-num-stat-cards">' +
+      '<div class="ck-card ck-num-stat-card">' +
+        '<div class="ck-eyebrow">Primal Soul Core &middot; Birth Day</div>' +
+        '<div class="ck-num-stat-header">' +
+          '<div class="ck-num-stat-gem ck-gem-mulank"><span class="ck-stat-digit">' + nums.mulank + '</span></div>' +
+          '<div>' +
+            '<h3 class="ck-card-title" style="margin:0; font-size:18px;">Radical Number (Mulank)</h3>' +
+            '<div class="ck-num-stat-ruler">' + mData.planet_symbol + ' ' + mData.ruling_planet + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ck-num-stat-badge">' + mData.title + '</div>' +
+        '<div class="ck-num-stat-meta"><span><b>Favourable Dates:</b> ' + mData.favourable_dates + '</span></div>' +
+      '</div>' +
+
+      '<div class="ck-card ck-card-rose ck-num-stat-card">' +
+        '<div class="ck-eyebrow">Karmic Horizon &middot; Complete DOB</div>' +
+        '<div class="ck-num-stat-header">' +
+          '<div class="ck-num-stat-gem ck-gem-bhagyank"><span class="ck-stat-digit">' + nums.bhagyank + '</span></div>' +
+          '<div>' +
+            '<h3 class="ck-card-title" style="margin:0; font-size:18px;">Destiny Number (Bhagyank)</h3>' +
+            '<div class="ck-num-stat-ruler">' + bData.planet_symbol + ' ' + bData.ruling_planet + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ck-num-stat-badge">' + bData.title + '</div>' +
+        '<div class="ck-num-stat-meta"><span><b>Favourable Numbers:</b> ' + bData.favourable_number + '</span></div>' +
+      '</div>' +
+
+      '<div class="ck-card ck-card-sage ck-num-stat-card">' +
+        '<div class="ck-eyebrow">Acoustic Resonance &middot; Chaldean Name</div>' +
+        '<div class="ck-num-stat-header">' +
+          '<div class="ck-num-stat-gem ck-gem-namank"><span class="ck-stat-digit">' + nums.namank + '</span></div>' +
+          '<div>' +
+            '<h3 class="ck-card-title" style="margin:0; font-size:18px;">Name Number (Namank)</h3>' +
+            '<div class="ck-num-stat-ruler">' + nData.planet_symbol + ' ' + nData.ruling_planet + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ck-num-stat-badge">' + nData.title + '</div>' +
+        '<div class="ck-num-stat-meta"><span><b>Favourable Letters:</b> ' + nData.favourable_alphabets + '</span></div>' +
+      '</div>' +
+    '</div>';
+
+  var heroLine = '<div class="ck-hero-line">"For ' + d.name + ', Radical Number ' + nums.mulank + ' (' + mData.ruling_planet + ') dictates primal instinct, Destiny Number ' + nums.bhagyank + ' (' + bData.ruling_planet + ') shapes the life purpose, and Chaldean Namank ' + nums.namank + ' (' + nData.ruling_planet + ') channels your projected worldly aura."</div>';
+
+  // Section 1: Radical Number Meaning
+  var cardMulank =
+    '<div class="ck-card"><div class="ck-eyebrow">1. Radical Number (Mulank ' + nums.mulank + ') &middot; ' + mData.ruling_planet + '</div>' +
+    '<h3 class="ck-card-title">Primal Self: ' + mData.title + '</h3><div class="ck-card-body">' +
+    '<p>' + mContent.meaning + '</p>' +
+    '<div class="ck-remedy" style="margin-top:14px;"><div class="ck-remedy-title">Radical Key Signatures</div>' +
+    '<div class="ck-correspondences-grid">' +
+      '<div><b>Ruling Planet:</b> ' + mData.planet_symbol + ' ' + mData.ruling_planet + '</div>' +
+      '<div><b>Favourable Sign:</b> ' + mData.favourable_sign + '</div>' +
+      '<div><b>Auspicious Colour:</b> ' + mData.auspicious_colour + '</div>' +
+      '<div><b>Sacred Gemstone:</b> ' + mData.gemstone + '</div>' +
+      '<div><b>Favourable Days:</b> ' + mData.favourable_days + '</div>' +
+      '<div><b>Cardinal Direction:</b> ' + mData.direction + '</div>' +
+    '</div></div>' +
+    '</div></div>';
+
+  // Section 2: Destiny Number Meaning
+  var cardBhagyank =
+    '<div class="ck-card ck-card-rose"><div class="ck-eyebrow">2. Destiny Number (Bhagyank ' + nums.bhagyank + ') &middot; ' + bData.ruling_planet + '</div>' +
+    '<h3 class="ck-card-title">Karmic Calling: ' + bData.title + '</h3><div class="ck-card-body">' +
+    '<p>' + bContent.meaning + '</p>' +
+    '<div class="ck-remedy" style="margin-top:14px;"><div class="ck-remedy-title">Destiny Key Alignments</div>' +
+    '<div class="ck-correspondences-grid">' +
+      '<div><b>Ruling Body:</b> ' + bData.planet_symbol + ' ' + bData.ruling_planet + '</div>' +
+      '<div><b>Presiding Deity:</b> ' + bData.god_goddess + '</div>' +
+      '<div><b>Favourable Numbers:</b> ' + bData.favourable_number + '</div>' +
+      '<div><b>Fast Day:</b> ' + bData.fast_day + '</div>' +
+      '<div><b>Auspicious Dates:</b> ' + bData.favourable_dates + '</div>' +
+      '<div><b>Favourable Gem:</b> ' + bData.gemstone + '</div>' +
+    '</div></div>' +
+    '</div></div>';
+
+  // Section 3: Name Number Meaning (Chaldean)
+  var cardNamank =
+    '<div class="ck-card ck-card-sage"><div class="ck-eyebrow">3. Chaldean Name Number (Namank ' + nums.namank + ') &middot; ' + nData.ruling_planet + '</div>' +
+    '<h3 class="ck-card-title">Acoustic Identity: ' + nData.title + '</h3><div class="ck-card-body">' +
+    '<p>' + nContent.meaning + '</p>' +
+    '<p><strong>Chaldean Letter Values:</strong> <em>1: A I J Q Y &middot; 2: B K R &middot; 3: C G L S &middot; 4: D M T &middot; 5: E H N X &middot; 6: U V W &middot; 7: O Z &middot; 8: F P</em></p>' +
+    '<div class="ck-remedy" style="margin-top:14px;"><div class="ck-remedy-title">Acoustic &amp; Social Resonance</div>' +
+    '<div class="ck-correspondences-grid">' +
+      '<div><b>Acoustic Ruler:</b> ' + nData.planet_symbol + ' ' + nData.ruling_planet + '</div>' +
+      '<div><b>Favourable Letters:</b> ' + nData.favourable_alphabets + '</div>' +
+      '<div><b>Auspicious Direction:</b> ' + nData.direction + '</div>' +
+      '<div><b>Harmonious Colors:</b> ' + nData.auspicious_colour + '</div>' +
+    '</div></div>' +
+    '</div></div>';
+
+  // Section 4: Auspicious Places & Health Profile
+  var cardHealthPlace =
+    '<div class="ck-card"><div class="ck-eyebrow">4. Auspicious Places &amp; Health Profile</div>' +
+    '<h3 class="ck-card-title">Vitality &amp; Environmental Harmony</h3><div class="ck-card-body">' +
+    '<p><strong>Auspicious Places &amp; Habitats:</strong> ' + mContent.auspicious_place + '</p>' +
+    '<p><strong>Health &amp; Physiological Focus:</strong> ' + mContent.health + '</p>' +
+    '</div></div>';
+
+  // Section 5: Career & Auspicious Times
+  var cardCareerTime =
+    '<div class="ck-card ck-card-rose"><div class="ck-eyebrow">5. Career Horizons &amp; Auspicious Time</div>' +
+    '<h3 class="ck-card-title">Vocational Trajectory &amp; Golden Hours</h3><div class="ck-card-body">' +
+    '<p><strong>Career &amp; Vocational Callings:</strong> ' + mContent.career + '</p>' +
+    '<p><strong>Auspicious Cosmic Hours &amp; Windows:</strong> ' + mContent.auspicious_time + '</p>' +
+    '</div></div>';
+
+  // Section 6: Fasts, Vedic Remedies & Sacred Yantra
+  var cardRemediesYantra =
+    '<div class="ck-card ck-card-sage"><div class="ck-eyebrow">6. Fasts, Vedic Remedies &amp; Sacred Yantra</div>' +
+    '<h3 class="ck-card-title">Remedial Harmonization &amp; Consecration</h3><div class="ck-card-body">' +
+    '<p><strong>Fasts &amp; Sacred Observances:</strong> ' + mContent.fasts_remedies + '</p>' +
+    '<p><strong>Sacred Yantra:</strong> ' + mContent.yantra + '</p>' +
+    '<div class="ck-remedy" style="margin-top:14px;"><div class="ck-remedy-title">Sacred Beeja Mantra for Daily Chanting</div>' +
+    '<p style="font-family:\'Cinzel\', serif; font-size:15px; color:#f2d38a; margin:4px 0 0; letter-spacing:0.04em;">' + mData.mantra + '</p>' +
+    '</div>' +
+    '</div></div>';
+
+  return headlineCardsHtml + heroLine + cardMulank + cardBhagyank + cardNamank + cardHealthPlace + cardCareerTime + cardRemediesYantra;
+}
+
 window.NAK_DESC = NAK_DESC;
 window.SIGN_DESC = SIGN_DESC;
 window.CAREER_Q = CAREER_Q;
@@ -693,6 +830,8 @@ window.genCareer = genCareer;
 window.genLove = genLove;
 window.genHealth = genHealth;
 window.genWealth = genWealth;
+window.genNumerology = genNumerology;
 window.getW2Note = getW2Note;
 window.renderCleanPdfSvgChart = renderCleanPdfSvgChart;
 window.buildPdfReportHtml = buildPdfReportHtml;
+

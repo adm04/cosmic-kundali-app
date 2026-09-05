@@ -28,7 +28,12 @@
 <!-- SCREEN 1: FORM -->
 <section class="screen" id="screen-form">
   <div class="form-wrap">
+    <div class="ck-portal-switch">
+      <button type="button" class="ck-portal-btn active" id="btn-portal-kundali">✦ Vedic Kundali</button>
+      <button type="button" class="ck-portal-btn" id="btn-portal-numerology">✧ Mystic Numerology Pro ✧</button>
+    </div>
     <div class="ck-lang-bar">
+
       <span class="ck-lang-label"><svg class="ck-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg> <span id="lbl-lang-text">Language / भाषा:</span></span>
       <select id="lang-select" class="ck-lang-select" title="Select Language">
         <option value="en" selected>English (Default)</option>
@@ -54,8 +59,15 @@
           <select id="f-gender"><option value="Male" id="opt-male">Male</option><option value="Female" id="opt-female">Female</option><option value="Other" id="opt-other">Other</option></select>
         </div>
         <div class="form-group">
-          <label for="f-dob" id="lbl-dob">Date of Birth</label>
-          <input type="date" id="f-dob" value="2000-01-15" max="2026-12-31" min="1900-01-01" required />
+          <label id="lbl-dob">Date of Birth</label>
+          <div class="ck-date-group">
+            <select id="f-dob-day" class="ck-date-select ck-date-day" title="Day of Birth"></select>
+            <span class="ck-date-separator">/</span>
+            <select id="f-dob-month" class="ck-date-select ck-date-month" title="Month of Birth"></select>
+            <span class="ck-date-separator">/</span>
+            <select id="f-dob-year" class="ck-date-select ck-date-year" title="Year of Birth"></select>
+          </div>
+          <input type="hidden" id="f-dob" value="2000-01-15" required />
         </div>
         <div class="form-group full">
           <label id="lbl-tob">Time of Birth</label>
@@ -111,6 +123,7 @@
     <button class="ck-tab" data-tab="love" id="tab-btn-love"><span class="ck-tab-glyph">&#9792;</span> <span class="tab-txt">Love &amp; Union</span></button>
     <button class="ck-tab" data-tab="health" id="tab-btn-health"><span class="ck-tab-glyph">&#9737;</span> <span class="tab-txt">Health &amp; Vitality</span></button>
     <button class="ck-tab" data-tab="wealth" id="tab-btn-wealth"><span class="ck-tab-glyph">&#9795;</span> <span class="tab-txt">Wealth / Artha</span></button>
+    <button class="ck-tab" data-tab="numerology" id="tab-btn-numerology"><span class="ck-tab-glyph">&#10022;</span> <span class="tab-txt">Numerology</span></button>
   </nav>
   <div class="ck-layout">
     <div>
@@ -140,6 +153,106 @@
   </div>
   <p class="ck-footer-note">Jyotish is a centuries-old symbolic language — a mirror for reflection, not a fixed verdict. Read these pillars as invitations to notice patterns in yourself, and pair them with your own judgment and, where it matters, a qualified professional.</p>
 </section>
+
+<!-- SCREEN 3: MYSTIC NUMEROLOGY PRO -->
+<section class="screen" id="screen-numerology" style="display:none;">
+  <div class="form-wrap num-portal-wrap">
+    <div class="ck-action-bar" style="justify-content:space-between; width:100%; margin-bottom:18px;">
+      <button class="ck-back" id="btn-num-back" style="margin-bottom:0;"><svg class="ck-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> <span>Return to Kundali</span></button>
+      <div class="ck-time-display" id="currentTime">
+        <span class="time-icon">🌙</span>
+        <span id="utcTime">Celestial UTC...</span>
+      </div>
+    </div>
+
+    <div class="form-kicker">✦ Sacred Pythagorean &amp; Vedic Gematria ✦</div>
+    <h1 class="form-title">✧ Mystic Numbers Pro ✧</h1>
+    <p class="form-sub">Unveil your sacred destiny, life path purpose, and soul urges encoded within the cosmic vibration of numbers.</p>
+
+    <form id="numerology-form" novalidate style="width:100%;">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label for="numFullName">
+            <span class="label-icon">✧</span>
+            Your Sacred Name
+          </label>
+          <input type="text" id="numFullName" placeholder="As written in the mortal realm (e.g. Arjun Sharma)..." autocomplete="name" required />
+        </div>
+
+        <div class="form-group full">
+          <label id="lbl-num-dob">
+            <span class="label-icon">✧</span>
+            Your Star Date of Birth
+          </label>
+          <div class="ck-date-group">
+            <select id="num-dob-day" class="ck-date-select ck-date-day" title="Day of Birth"></select>
+            <span class="ck-date-separator">/</span>
+            <select id="num-dob-month" class="ck-date-select ck-date-month" title="Month of Birth"></select>
+            <span class="ck-date-separator">/</span>
+            <select id="num-dob-year" class="ck-date-select ck-date-year" title="Year of Birth"></select>
+          </div>
+          <input type="hidden" id="numBirthDate" value="2000-01-15" required />
+        </div>
+      </div>
+
+      <button type="submit" id="calculateBtn" class="generate-btn" style="margin-top:16px;">
+        <span class="btn-glow"></span>
+        <span class="btn-text">Reveal Your Destiny ✦</span>
+      </button>
+    </form>
+
+    <!-- Results Section -->
+    <div id="num-results" class="num-results-wrap hidden" style="margin-top:30px; width:100%;">
+      <div class="ck-eyebrow" style="text-align:center; margin-bottom:8px;">Sacred Resonances Revealed</div>
+      <h2 style="font-family:'Cinzel', serif; color:#f2d38a; font-size:22px; text-align:center; margin-bottom:20px;">Your 5 Sacred Crystals</h2>
+
+      <div class="ck-num-crystals-grid">
+        <div class="ck-num-crystal-card ck-crystal-destiny">
+          <div class="ck-num-crystal-gem"><span id="destinyNumber" class="ck-num-val">-</span></div>
+          <div class="ck-num-crystal-title">Destiny Crystal</div>
+          <div id="destinySub" class="ck-num-crystal-sub">Soul Mission</div>
+          <div id="destinyBadges" class="crystal-badges-cluster"></div>
+        </div>
+        <div class="ck-num-crystal-card ck-crystal-lifepath">
+          <div class="ck-num-crystal-gem"><span id="lifePathNumber" class="ck-num-val">-</span></div>
+          <div class="ck-num-crystal-title">Life Path Crystal</div>
+          <div id="lifePathSub" class="ck-num-crystal-sub">Core Journey</div>
+          <div id="lifePathBadges" class="crystal-badges-cluster"></div>
+        </div>
+        <div class="ck-num-crystal-card ck-crystal-soul">
+          <div class="ck-num-crystal-gem"><span id="soulNumber" class="ck-num-val">-</span></div>
+          <div class="ck-num-crystal-title">Soul Urge Crystal</div>
+          <div id="soulSub" class="ck-num-crystal-sub">Inner Craving</div>
+          <div id="soulBadges" class="crystal-badges-cluster"></div>
+        </div>
+        <div class="ck-num-crystal-card ck-crystal-pers">
+          <div class="ck-num-crystal-gem"><span id="personalityNumber" class="ck-num-val">-</span></div>
+          <div class="ck-num-crystal-title">Personality Crystal</div>
+          <div id="personalitySub" class="ck-num-crystal-sub">Outer Presence</div>
+          <div id="personalityBadges" class="crystal-badges-cluster"></div>
+        </div>
+        <div class="ck-num-crystal-card ck-crystal-bday">
+          <div class="ck-num-crystal-gem"><span id="birthdayNumber" class="ck-num-val">-</span></div>
+          <div class="ck-num-crystal-title">Birthday Crystal</div>
+          <div id="birthdaySub" class="ck-num-crystal-sub">Inherent Gift</div>
+          <div id="birthdayBadges" class="crystal-badges-cluster"></div>
+        </div>
+      </div>
+
+      <div class="prophecy-scroll-box" style="margin-top:28px;">
+        <div class="ck-eyebrow" style="text-align:center;">Sacred Prophecy &amp; Analysis</div>
+        <div id="numerologyMeaning" class="prophecy-text"></div>
+      </div>
+
+      <div class="ck-card" style="margin-top:24px;">
+        <div class="ck-eyebrow">📜 Recent Astral Inquiries</div>
+        <h3 class="ck-card-title" style="font-size:16px;">Reading History</h3>
+        <div id="numHistoryList" class="num-history-list" style="margin-top:10px;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 
 <script type="module" src="./src/js/starfield.js"></script>
 <script type="module" src="./src/js/astro-engine.js"></script>

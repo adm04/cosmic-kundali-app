@@ -3,21 +3,30 @@ node_modules
 .pnp
 .pnp.js
 
-# Build output
+# Build & bundle outputs
 dist
 dist-ssr
 build
+*.tsbuildinfo
 
-# Environment variables (NEVER commit these — they contain secrets)
+# Environment variables (NEVER commit files containing secrets)
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 
-# Deployment
+# Temporary & backup files
+*.backup
+*.bak
+*.tmp
+*.log
+*.swp
+*~
+
+# Deployment artifacts
 .vercel
 .netlify
 
-# Editor
+# IDE & Editor files
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -27,6 +36,10 @@ build
 *.sln
 *.sw?
 
-# OS
-.DS_Store
-Thumbs.db
+# OS metadata
+# Cloned repositories / submodules
+Numerology-app
+awesome-badges
+
+
+

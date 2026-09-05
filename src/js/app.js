@@ -1,18 +1,125 @@
 /* MAIN APPLICATION CONTROLLER */
 import html2pdf from 'html2pdf.js';
+import { getFullNumerologyProfile, getCrystalBadgesHtml } from './numerology-engine.js';
+import { generateVedicNumerologyReport } from './numerology-data.js';
 
-/* POPULATE YEAR SELECT (1920–2026) */
-(function(){
-  var ySel=document.getElementById('f-dob-year');
-  if(!ySel) return;
-  var currentY=new Date().getFullYear();
-  for(var y=currentY; y>=1920; y--){
-    var opt=document.createElement('option');
-    opt.value=y; opt.textContent=y;
-    if(y===1995) opt.selected=true;
-    ySel.appendChild(opt);
+/* ==========================================================================
+   CELESTIAL UNIFIED DATE PICKER INITIALIZATION (FUNCTIONAL & EASY)
+   ========================================================================== */
+function initCelestialDatePicker(dayId, monthId, yearId, hiddenId, defY, defM, defD) {
+  var daySel = document.getElementById(dayId);
+  var monthSel = document.getElementById(monthId);
+  var yearSel = document.getElementById(yearId);
+  var hiddenInput = document.getElementById(hiddenId);
+
+  if (!daySel || !monthSel || !yearSel || !hiddenInput) return;
+
+  var MONTHS = [
+    { num: 1, name: "Jan" },
+    { num: 2, name: "Feb" },
+    { num: 3, name: "Mar" },
+    { num: 4, name: "Apr" },
+    { num: 5, name: "May" },
+    { num: 6, name: "Jun" },
+    { num: 7, name: "Jul" },
+    { num: 8, name: "Aug" },
+    { num: 9, name: "Sep" },
+    { num: 10, name: "Oct" },
+    { num: 11, name: "Nov" },
+    { num: 12, name: "Dec" }
+  ];
+
+  function getDaysInMonth(year, month) {
+    return new Date(year, month, 0).getDate();
   }
+
+  function updateDays(targetDay) {
+    var curYear = parseInt(yearSel.value, 10) || defY;
+    var curMonth = parseInt(monthSel.value, 10) || defM;
+    var maxDays = getDaysInMonth(curYear, curMonth);
+    var currentSelected = targetDay !== undefined ? targetDay : (parseInt(daySel.value, 10) || defD);
+    if (currentSelected > maxDays) currentSelected = maxDays;
+
+    daySel.innerHTML = '';
+    for (var d = 1; d <= maxDays; d++) {
+      var opt = document.createElement('option');
+      var valStr = d < 10 ? '0' + d : String(d);
+      opt.value = valStr;
+      opt.textContent = valStr;
+      if (d === currentSelected) opt.selected = true;
+      daySel.appendChild(opt);
+    }
+  }
+
+  // Populate Months
+  monthSel.innerHTML = '';
+  MONTHS.forEach(function(m) {
+    var optM = document.createElement('option');
+    var mStr = m.num < 10 ? '0' + m.num : String(m.num);
+    optM.value = mStr;
+    optM.textContent = m.name;
+    if (m.num === defM) optM.selected = true;
+    monthSel.appendChild(optM);
+  });
+
+  // Populate Years 2026 down to 1920
+  yearSel.innerHTML = '';
+  var currentY = new Date().getFullYear();
+  for (var y = currentY; y >= 1920; y--) {
+    var optY = document.createElement('option');
+    optY.value = String(y);
+    optY.textContent = String(y);
+    if (y === defY) optY.selected = true;
+    yearSel.appendChild(optY);
+  }
+
+  updateDays(defD);
+
+  function syncHidden() {
+    var dayVal = daySel.value || '15';
+    var monthVal = monthSel.value || '01';
+    var yearVal = yearSel.value || '2000';
+    var formatted = yearVal + '-' + monthVal + '-' + dayVal;
+    if (hiddenInput.value !== formatted) {
+      hiddenInput.value = formatted;
+      hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+  }
+
+  monthSel.addEventListener('change', function() {
+    updateDays();
+    syncHidden();
+  });
+  yearSel.addEventListener('change', function() {
+    updateDays();
+    syncHidden();
+  });
+  daySel.addEventListener('change', syncHidden);
+
+  syncHidden();
+
+  // Programmatic setter for synchronization
+  hiddenInput._setDate = function(isoStr) {
+    if (!isoStr || !isoStr.includes('-')) return;
+    var parts = isoStr.split('-');
+    if (parts.length >= 3) {
+      var y = parseInt(parts[0], 10);
+      var m = parseInt(parts[1], 10);
+      var d = parseInt(parts[2], 10);
+      if (!isNaN(y)) yearSel.value = String(y);
+      if (!isNaN(m)) monthSel.value = m < 10 ? '0' + m : String(m);
+      updateDays(d);
+      syncHidden();
+    }
+  };
+}
+
+// Initialize on Screen 1 & Screen 3
+(function() {
+  initCelestialDatePicker('f-dob-day', 'f-dob-month', 'f-dob-year', 'f-dob', 2000, 1, 15);
+  initCelestialDatePicker('num-dob-day', 'num-dob-month', 'num-dob-year', 'numBirthDate', 2000, 1, 15);
 })();
+
 
 /* INTERACTIVE CITY SEARCH AUTOCOMPLETE & LIVE OPENSTREETMAP API GEOCODER */
 (function(){
@@ -401,8 +508,15 @@ function renderTab(id,data){
   window._currentTab = id;
   data = data || window._kd;
   var mode = window._kdMode || 'simplified';
-  var gens={overview:genOverview,career:genCareer,love:genLove,health:genHealth,wealth:genWealth};
-  var fn = gens[id] || genOverview;
+  var gens = {
+    overview: genOverview,
+    career: genCareer,
+    love: genLove,
+    health: genHealth,
+    wealth: genWealth,
+    numerology: window.genNumerology || genOverview
+  };
+  var fn = gens[id] || (window['gen' + id.charAt(0).toUpperCase() + id.slice(1)]) || genOverview;
   document.getElementById('tab-content').innerHTML = fn(data, mode);
 }
 
@@ -532,13 +646,17 @@ if(btnBackEl){
 }
 
 /* SUPABASE SAVE CHART */
-var SUPABASE_URL = 'https://qvvgiayrwagpcrluegot.supabase.co';
-var SUPABASE_KEY = 'sb_publishable_F9-HQwvO02BIVwbgTmrY7w_Imb3fw9X';
+var SUPABASE_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_URL) || '';
+var SUPABASE_KEY = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_SUPABASE_ANON_KEY) || '';
 
 var btnSaveEl = document.getElementById('btn-save');
 if(btnSaveEl){
   btnSaveEl.addEventListener('click', function(){
     if(!window._kd){ alert('No chart generated to save.'); return; }
+    if(!SUPABASE_URL || !SUPABASE_KEY){
+      alert('Supabase not configured — please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file.');
+      return;
+    }
     var d = window._kd;
     var record = {
       name: d.name,
@@ -646,3 +764,301 @@ if(pdfBtn){
 
 window.generate = generate;
 window.renderTab = renderTab;
+
+/* ==========================================================================
+   PORTAL NAVIGATION CONTROLLER (KUNDALI / NUMEROLOGY)
+   ========================================================================== */
+(function setupPortalSwitcher() {
+  var btnKundali = document.getElementById('btn-portal-kundali');
+  var btnNumerology = document.getElementById('btn-portal-numerology');
+  var btnNumBack = document.getElementById('btn-num-back');
+  var screenForm = document.getElementById('screen-form');
+  var screenResult = document.getElementById('screen-result');
+  var screenNumerology = document.getElementById('screen-numerology');
+
+  function showNumerology() {
+    if (screenForm) screenForm.style.display = 'none';
+    if (screenResult) screenResult.style.display = 'none';
+    if (screenNumerology) {
+      screenNumerology.style.display = 'flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    // Synchronize form fields if entered on Kundali screen
+    var kName = document.getElementById('f-name');
+    var kDob = document.getElementById('f-dob');
+    var nName = document.getElementById('numFullName');
+    var nDob = document.getElementById('numBirthDate');
+    if (kName && nName && kName.value && !nName.value) {
+      nName.value = kName.value;
+    }
+    if (kDob && nDob && kDob.value) {
+      if (nDob._setDate) nDob._setDate(kDob.value);
+      else nDob.value = kDob.value;
+    }
+  }
+
+  function showKundali() {
+    if (screenNumerology) screenNumerology.style.display = 'none';
+    if (screenResult) screenResult.style.display = 'none';
+    if (screenForm) {
+      screenForm.style.display = 'flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    var kDob = document.getElementById('f-dob');
+    var nDob = document.getElementById('numBirthDate');
+    if (kDob && nDob && nDob.value) {
+      if (kDob._setDate) kDob._setDate(nDob.value);
+      else kDob.value = nDob.value;
+    }
+    if (btnKundali) btnKundali.classList.add('active');
+    if (btnNumerology) btnNumerology.classList.remove('active');
+  }
+
+  if (btnNumerology) {
+    btnNumerology.addEventListener('click', function(e) {
+      e.preventDefault();
+      btnNumerology.classList.add('active');
+      if (btnKundali) btnKundali.classList.remove('active');
+      showNumerology();
+    });
+  }
+
+  if (btnKundali) {
+    btnKundali.addEventListener('click', function(e) {
+      e.preventDefault();
+      showKundali();
+    });
+  }
+
+  if (btnNumBack) {
+    btnNumBack.addEventListener('click', function(e) {
+      e.preventDefault();
+      showKundali();
+    });
+  }
+})();
+
+/* ==========================================================================
+   CELESTIAL UTC CLOCK
+   ========================================================================== */
+(function setupCelestialClock() {
+  var clockEl = document.getElementById('utcTime');
+  if (!clockEl) return;
+  function updateTime() {
+    var now = new Date();
+    var utcStr = now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+    clockEl.textContent = utcStr;
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+})();
+
+/* ==========================================================================
+   STANDALONE NUMEROLOGY CALCULATOR CONTROLLER
+   ========================================================================== */
+(function setupNumerologyCalculator() {
+  var form = document.getElementById('numerology-form');
+  var calcBtn = document.getElementById('calculateBtn');
+  var resultsWrap = document.getElementById('num-results');
+  var historyList = document.getElementById('numHistoryList');
+
+  if (!form || !calcBtn) return;
+
+  function animateNumber(elementId, finalNumber) {
+    var element = document.getElementById(elementId);
+    if (!element) return;
+    var duration = 1200;
+    var steps = 18;
+    var stepDuration = duration / steps;
+    var currentStep = 0;
+
+    var interval = setInterval(function() {
+      currentStep++;
+      if (currentStep >= steps) {
+        clearInterval(interval);
+        element.textContent = finalNumber;
+        return;
+      }
+      var progress = currentStep / steps;
+      var currentNumber = Math.max(1, Math.floor(finalNumber * progress));
+      element.textContent = currentNumber;
+    }, stepDuration);
+  }
+
+  function renderHistory() {
+    if (!historyList) return;
+    try {
+      var history = JSON.parse(localStorage.getItem('cosmic_numerology_history') || '[]');
+      if (history.length === 0) {
+        historyList.innerHTML = '<div style="color:var(--muted); font-size:12px; font-style:italic;">No recent readings yet. Enter your details above to reveal your sacred vibrations!</div>';
+        return;
+      }
+      historyList.innerHTML = history.slice(0, 5).map(function(item, idx) {
+        return '<div class="num-history-item" data-idx="' + idx + '">' +
+          '<div>' +
+            '<span class="num-history-name">' + item.name + '</span>' +
+            '<span class="num-history-meta"> &middot; ' + item.dob + '</span>' +
+          '</div>' +
+          '<div style="font-family:\'Cinzel\', serif; color:#f2d38a; font-size:11px;">' +
+            'LP ' + item.lifePath + ' / D ' + item.destiny +
+          '</div>' +
+        '</div>';
+      }).join('');
+
+      historyList.querySelectorAll('.num-history-item').forEach(function(el) {
+        el.addEventListener('click', function() {
+          var idx = parseInt(el.dataset.idx, 10);
+          var record = history[idx];
+          if (record) {
+            document.getElementById('numFullName').value = record.name;
+            var nDobEl = document.getElementById('numBirthDate');
+            if (nDobEl) {
+              if (nDobEl._setDate) nDobEl._setDate(record.dob);
+              else nDobEl.value = record.dob;
+            }
+            performCalculation(record.name, record.dob, false);
+          }
+        });
+      });
+    } catch (e) {
+      // Ignore localStorage read errors
+    }
+  }
+
+  function saveHistory(name, dob, lifePath, destiny) {
+    try {
+      var history = JSON.parse(localStorage.getItem('cosmic_numerology_history') || '[]');
+      history = history.filter(function(h) {
+        return !(h.name.toLowerCase() === name.toLowerCase() && h.dob === dob);
+      });
+      history.unshift({ name: name, dob: dob, lifePath: lifePath, destiny: destiny, timestamp: Date.now() });
+      localStorage.setItem('cosmic_numerology_history', JSON.stringify(history.slice(0, 10)));
+      renderHistory();
+    } catch (e) {
+      // Ignore localStorage write errors
+    }
+  }
+
+  function performCalculation(name, dob, shouldSave) {
+    if (shouldSave === undefined) shouldSave = true;
+    var btnText = calcBtn.querySelector('.btn-text');
+    calcBtn.disabled = true;
+    if (btnText) btnText.textContent = '✨ Consulting the Stars... ✨';
+
+    setTimeout(function() {
+      calcBtn.disabled = false;
+      if (btnText) btnText.textContent = 'Reveal Your Destiny ✦';
+
+      try {
+        var profile = getFullNumerologyProfile(name, dob);
+        var nums = profile.numbers;
+        var meanings = profile.meanings;
+        var rulers = profile.rulers;
+
+        if (resultsWrap) {
+          resultsWrap.classList.remove('hidden');
+          resultsWrap.style.opacity = '0';
+          setTimeout(function() { resultsWrap.style.opacity = '1'; }, 50);
+        }
+
+        animateNumber('destinyNumber', nums.destiny);
+        animateNumber('lifePathNumber', nums.lifePath);
+        animateNumber('soulNumber', nums.soul);
+        animateNumber('personalityNumber', nums.personality);
+        animateNumber('birthdayNumber', nums.birthday);
+
+        var dSub = document.getElementById('destinySub');
+        var lpSub = document.getElementById('lifePathSub');
+        var sSub = document.getElementById('soulSub');
+        var pSub = document.getElementById('personalitySub');
+        var bSub = document.getElementById('birthdaySub');
+
+        if (dSub) dSub.textContent = meanings.destiny.title;
+        if (lpSub) lpSub.textContent = meanings.lifePath.keyword;
+        if (sSub) sSub.textContent = meanings.soul.title;
+        if (pSub) pSub.textContent = meanings.personality.title;
+        if (bSub) bSub.textContent = meanings.birthday.title;
+
+        var dBadges = document.getElementById('destinyBadges');
+        var lpBadges = document.getElementById('lifePathBadges');
+        var sBadges = document.getElementById('soulBadges');
+        var pBadges = document.getElementById('personalityBadges');
+        var bBadges = document.getElementById('birthdayBadges');
+
+        if (dBadges) dBadges.innerHTML = getCrystalBadgesHtml(nums.destiny, rulers.destiny);
+        if (lpBadges) lpBadges.innerHTML = getCrystalBadgesHtml(nums.lifePath, rulers.lifePath);
+        if (sBadges) sBadges.innerHTML = getCrystalBadgesHtml(nums.soul);
+        if (pBadges) pBadges.innerHTML = getCrystalBadgesHtml(nums.personality);
+        if (bBadges) bBadges.innerHTML = getCrystalBadgesHtml(nums.birthday);
+
+        var meaningEl = document.getElementById('numerologyMeaning');
+        if (meaningEl) {
+          var vedicRep = generateVedicNumerologyReport(name, dob);
+          var vmData = vedicRep.data.mulank;
+          var vbData = vedicRep.data.bhagyank;
+          var vnData = vedicRep.data.namank;
+          var vmContent = vedicRep.content.mulank;
+          var vbContent = vedicRep.content.bhagyank;
+          var vnContent = vedicRep.content.namank;
+
+          meaningEl.innerHTML =
+            '<div class="prophecy-item">' +
+              '<div class="prophecy-title-sub">✦ Radical Number (Mulank ' + vedicRep.numbers.mulank + ') &mdash; ' + vmData.ruling_planet + ' &middot; ' + vmData.title + '</div>' +
+              '<p>' + vmContent.meaning + '</p>' +
+              '<p style="margin-top:6px; color:#f2d38a;"><em>Sacred Mantra:</em> ' + vmData.mantra + '</p>' +
+              '<p style="margin-top:4px; font-size:13px; color:#c0b4db;"><b>Auspicious Colour:</b> ' + vmData.auspicious_colour + ' &middot; <b>Gemstone:</b> ' + vmData.gemstone + ' &middot; <b>Favourable Dates:</b> ' + vmData.favourable_dates + '</p>' +
+            '</div>' +
+            '<div class="prophecy-item">' +
+              '<div class="prophecy-title-sub">✦ Destiny Number (Bhagyank ' + vedicRep.numbers.bhagyank + ') &mdash; ' + vbData.ruling_planet + ' &middot; ' + vbData.title + '</div>' +
+              '<p>' + vbContent.meaning + '</p>' +
+              '<p style="margin-top:6px; color:#f2d38a;"><em>Deity &amp; Fast Day:</em> ' + vbData.god_goddess + ' &middot; Fast: ' + vbData.fast_day + '</p>' +
+              '<p style="margin-top:4px; font-size:13px; color:#c0b4db;"><b>Karmic Calling:</b> ' + vbContent.career + '</p>' +
+            '</div>' +
+            '<div class="prophecy-item">' +
+              '<div class="prophecy-title-sub">✦ Chaldean Name Number (Namank ' + vedicRep.numbers.namank + ') &mdash; ' + vnData.ruling_planet + ' &middot; ' + vnData.title + '</div>' +
+              '<p>' + vnContent.meaning + '</p>' +
+              '<p style="margin-top:6px; font-size:13px; color:#c0b4db;"><b>Acoustic Letters:</b> ' + vnData.favourable_alphabets + ' &middot; <b>Direction:</b> ' + vnData.direction + '</p>' +
+            '</div>' +
+            '<div class="prophecy-item">' +
+              '<div class="prophecy-title-sub">✦ Life Path ' + nums.lifePath + ' &mdash; ' + meanings.lifePath.keyword + '</div>' +
+              '<p>' + meanings.lifePath.summary + '</p>' +
+              '<p style="margin-top:6px; color:#f2d38a;"><em>Guidance:</em> ' + meanings.lifePath.guidance + '</p>' +
+            '</div>' +
+            '<div class="prophecy-item">' +
+              '<div class="prophecy-title-sub">✦ Soul Urge ' + nums.soul + ' (Heart\'s Desire) &amp; Personality ' + nums.personality + '</div>' +
+              '<p><strong>Inner Soul Craving:</strong> ' + meanings.soul.desc + '</p>' +
+              '<p style="margin-top:6px;"><strong>Outer Aura Impression:</strong> ' + meanings.personality.desc + '</p>' +
+            '</div>' +
+            '<div class="prophecy-item" style="border-bottom:none;">' +
+              '<div class="prophecy-title-sub">✧ Cosmic Synthesis &amp; Sacred Resonance ✧</div>' +
+              '<p>' + profile.synthesis + '</p>' +
+            '</div>';
+        }
+
+        if (shouldSave) {
+          saveHistory(name, dob, nums.lifePath, nums.destiny);
+        }
+
+        setTimeout(function() {
+          resultsWrap.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+
+      } catch (err) {
+        console.error('Numerology computation error:', err);
+        alert('Could not calculate numerology. Please verify your sacred name and star date.');
+      }
+    }, 600);
+  }
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var name = document.getElementById('numFullName').value.trim();
+    var dob = document.getElementById('numBirthDate').value;
+    if (!name) { alert('Please enter your sacred name.'); return; }
+    if (!dob) { alert('Please select your star date of birth.'); return; }
+    performCalculation(name, dob, true);
+  });
+
+  renderHistory();
+})();
+
