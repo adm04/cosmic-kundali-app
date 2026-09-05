@@ -162,12 +162,18 @@ export function getCrystalBadgesHtml(num, ruler) {
   const isMaster = num === 11 || num === 22 || num === 33;
   const masterVariant = isMaster ? 'master' : 'gold';
 
+  const rulerPlanet = ruler.planet.split(' ')[0];
+  const elementVal = ruler.element; // "Earth", "Air", "Ether", "Cosmic Light", etc.
+  const gemVal = ruler.gemstone.split(' ')[0].replace(/[^a-zA-Z]/g, '');
+  const chakraVal = ruler.chakra.replace(' / Third Eye', ' / 3rd Eye');
+  const levelVal = isMaster ? `Master ${num}` : `Root ${num}`;
+
   return `<div class="crystal-badges-cluster">` +
-    renderMysticBadgeHtml('Ruler', ruler.planet.split(' ')[0], ruler.symbol, 'planet') +
-    renderMysticBadgeHtml('Element', `${ruler.element} (${ruler.sanskritElement})`, '⚡', 'element') +
-    renderMysticBadgeHtml('Gem', ruler.gemstone.split(' ')[0], '💎', 'gem') +
-    renderMysticBadgeHtml('Chakra', ruler.chakra, '🕉️', 'chakra') +
-    renderMysticBadgeHtml('Level', isMaster ? `Master ${num}` : `Root ${num}`, isMaster ? '👑' : '✦', masterVariant) +
+    renderMysticBadgeHtml('Ruler', rulerPlanet, ruler.symbol, 'planet') +
+    renderMysticBadgeHtml('Element', elementVal, '⚡', 'element') +
+    renderMysticBadgeHtml('Gem', gemVal, '💎', 'gem') +
+    renderMysticBadgeHtml('Chakra', chakraVal, '🕉️', 'chakra') +
+    renderMysticBadgeHtml('Level', levelVal, isMaster ? '👑' : '✦', masterVariant) +
   `</div>`;
 }
 
