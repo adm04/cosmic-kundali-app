@@ -747,7 +747,7 @@ function genNumerology(d, mode) {
       '</div>' +
     '</div>';
 
-  var heroLine = '<div class="ck-hero-line">"For ' + d.name + ', Radical Number ' + nums.mulank + ' (' + mData.ruling_planet + ') dictates primal instinct, Destiny Number ' + nums.bhagyank + ' (' + bData.ruling_planet + ') shapes the life purpose, and Chaldean Namank ' + nums.namank + ' (' + nData.ruling_planet + ') channels your projected worldly aura."</div>';
+  var heroLine = '<div class="ck-hero-line">"For ' + d.name + ', Radical Number ' + nums.mulank + ' &middot; ' + mData.ruling_planet + ' dictates primal instinct, Destiny Number ' + nums.bhagyank + ' &middot; ' + bData.ruling_planet + ' shapes the life purpose, and Chaldean Namank ' + nums.namank + ' &middot; ' + nData.ruling_planet + ' channels your projected worldly aura."</div>';
 
   // 2. Info Grid (2-column layout + full-width dates and mantra)
   var infoGridHtml =

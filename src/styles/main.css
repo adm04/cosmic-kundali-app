@@ -14,7 +14,7 @@
   --border: rgba(201,162,75,0.25);
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: clip; }
 
 body {
   min-height: 100vh;
@@ -1623,7 +1623,7 @@ body.city-dropdown-open .generate-btn,
    ========================================================================== */
 .ck-num-stat-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 16px;
   margin-bottom: 24px;
   width: 100%;
@@ -1741,13 +1741,15 @@ body.city-dropdown-open .generate-btn,
 
 .ck-num-table-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* sized by the column, not the viewport: the tab sits beside the chart on desktop */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: 10px 14px;
   width: 100%;
 }
 
 .ck-table-cell {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
@@ -1778,6 +1780,7 @@ body.city-dropdown-open .generate-btn,
 .ck-cell-val {
   color: #ffffff;
   text-align: right;
+  margin-left: auto;
   font-weight: 500;
   word-break: break-word;
 }
@@ -1853,7 +1856,7 @@ body.city-dropdown-open .generate-btn,
 /* TRAIT CARDS (COMPASS, HEART, CLOCK, CAREER, REMEDIES) */
 .ck-trait-cards-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -1876,7 +1879,7 @@ body.city-dropdown-open .generate-btn,
 
 .ck-yantra-layout {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: 24px;
   align-items: center;
 }
@@ -1909,15 +1912,6 @@ body.city-dropdown-open .generate-btn,
 }
 
 @media (max-width: 860px) {
-  .ck-trait-cards-grid {
-    grid-template-columns: 1fr;
-  }
-  .ck-yantra-layout {
-    grid-template-columns: 1fr;
-  }
-  .ck-num-table-grid {
-    grid-template-columns: 1fr;
-  }
   .ck-table-cell {
     flex-direction: column;
     align-items: flex-start;
@@ -1925,28 +1919,17 @@ body.city-dropdown-open .generate-btn,
   }
   .ck-cell-val {
     text-align: left;
+    margin-left: 0;
   }
 }
 
 /* RESPONSIVE DESIGN (LAPTOP & MOBILE) */
 .ck-num-stat-card .ck-card-title {
-  font-size: clamp(15px, 1.35vw, 18px);
+  font-size: 18px;
   line-height: 1.25;
 }
 
-@media (max-width: 1024px) {
-  .ck-num-stat-cards {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-}
-
 @media (max-width: 768px) {
-  .ck-num-stat-cards {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
   .ck-correspondences-grid {
     grid-template-columns: 1fr;
     gap: 6px;
